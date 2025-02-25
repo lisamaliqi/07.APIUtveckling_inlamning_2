@@ -6,3 +6,26 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+
+model GameRoom {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+
+  users   User[]
+}
+
+/* model ScoreBoard {
+  id      String  @id @map("_id")
+
+  users   User[]
+} */
+
+model User {
+  id            String      @id @map("_id")
+  username      String
+  gameRoomId    String      @db.ObjectId
+  score         Int         
+  timer         Int
+
+  room          GameRoom    @relation(fields: [gameRoomId], references: [id])
+}
