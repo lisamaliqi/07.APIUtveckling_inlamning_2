@@ -8,6 +8,12 @@ import "./assets/scss/style.scss";
 const SOCKET_HOST = import.meta.env.VITE_SOCKET_HOST;
 console.log("🙇 Connecting to Socket.IO Server at:", SOCKET_HOST);
 
+//Form
+const joinGameEl = document.querySelector("#") as HTMLFormElement
+const usernameInputEl = document.querySelector("#") as HTMLInputElement
+
+let username: string | null = null;
+
 // Connect to Socket.IO Server
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOST);
 
@@ -30,3 +36,22 @@ socket.on("disconnect", () => {
 socket.io.on("reconnect", () => {
 	console.log("😊 Reconnected to server:", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
+
+//Save Username
+joinGameEl.addEventListener("submit", (e) => {	
+	e.preventDefault();
+
+	//get username
+	username = usernameInputEl.value.trim()
+
+	// no username alert the user
+	if(!username){
+		alert("No username")
+		return
+	}
+
+	socket.emit("userJoinRequset",username)
+
+
+})
+
