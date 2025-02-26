@@ -1,0 +1,44 @@
+
+// GRID LAYOUT
+body {
+    font-family: Arial, sans-serif;
+    margin: 5%;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+#grid-container {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* Max 10 columns */
+    grid-template-rows: repeat(10, 1fr);    /* Max 10 rows */
+    background-color: #ddd;
+    border: 2px solid black;
+    width: 50vw; /* Adjust width as needed */
+    height: 50vw; /* Adjust height as needed to maintain square grid items */
+    max-width: 500px; /* Fixed width for 10 items */
+    max-width: 500px; /* Fixed height for 10 items */
+    box-sizing: border-box;
+
+    .cells {
+        background-color: lightblue;
+        border: 1px solid black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+
+        .object {
+            font-size: 2em; /* Adjust size as needed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    }
+}
+
