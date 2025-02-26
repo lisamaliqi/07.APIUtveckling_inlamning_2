@@ -13,6 +13,7 @@ const joinGameEl = document.querySelector("#") as HTMLFormElement
 const usernameInputEl = document.querySelector("#") as HTMLInputElement
 
 let username: string | null = null;
+let gameRoomId: string | null =null
 
 // Connect to Socket.IO Server
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOST);
@@ -43,15 +44,15 @@ joinGameEl.addEventListener("submit", (e) => {
 
 	//get username
 	username = usernameInputEl.value.trim()
-
+	gameRoomId 
 	// no username alert the user
 	if(!username){
 		alert("No username")
 		return
 	}
 
-	socket.emit("userJoinRequset",username)
+	socket.emit("userJoinRequset",username,)
 
-
+	
 })
 

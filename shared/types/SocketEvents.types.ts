@@ -6,5 +6,5 @@ export interface ServerToClientEvents {
 
 // Events emitted by the client to the server
 export interface ClientToServerEvents {
-    userJoinRequset: (username:string) => void;
+    userJoinRequset: (username:string, ) => void;
 }
