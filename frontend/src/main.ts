@@ -9,8 +9,8 @@ const SOCKET_HOST = import.meta.env.VITE_SOCKET_HOST;
 console.log("🙇 Connecting to Socket.IO Server at:", SOCKET_HOST);
 
 //Form
-const joinGameEl = document.querySelector("#") as HTMLFormElement
-const usernameInputEl = document.querySelector("#") as HTMLInputElement
+const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
+const usernameInputEl = document.querySelector("#username") as HTMLInputElement
 
 let username: string | null = null;
 let gameRoomId: string | null =null

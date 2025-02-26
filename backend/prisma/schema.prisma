@@ -23,9 +23,9 @@ model GameRoom {
 model User {
   id            String      @id @map("_id")
   username      String
-  gameRoomId    String      @db.ObjectId
-  score         Int         
-  timer         Int
+  gameRoomId    String?      @db.ObjectId
+  score         Int?         
+  timer         Int?
 
-  room          GameRoom    @relation(fields: [gameRoomId], references: [id])
+  room          GameRoom?    @relation(fields: [gameRoomId], references: [id])
 }

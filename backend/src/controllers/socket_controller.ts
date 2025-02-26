@@ -27,7 +27,7 @@ export const handleConnection = (
 			data:{
 				id: socket.id,
 				username: username,
-				gameRoomId : null,
+				gameRoomId: null,
 				score: null,
 				timer: null,
 			}
