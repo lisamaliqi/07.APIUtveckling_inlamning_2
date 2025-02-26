@@ -1,0 +1,33 @@
+body {
+    background-color: $bg-color;
+}
+
+#app,
+#login-wrapper,
+
+#login-wrapper {
+    display: flex;
+    align-items: center;
+    #login-forms {
+        margin: 0 auto;
+        text-align: center;
+    }
+    #activeGames {
+    margin-top: 100px ;
+    background-color: lightgray;
+    width: 300px;
+    height: 500px;
+
+    }
+    #top10Games {
+    margin-top: 100px;
+    background-color: lightgray ;
+    width: 300px;
+    height: 500px;
+        
+    }
+    
+
+}
+
+
