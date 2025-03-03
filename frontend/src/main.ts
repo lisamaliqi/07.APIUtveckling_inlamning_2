@@ -18,52 +18,52 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOS
 const gridContainerEl = document.querySelector('#grid-container') as HTMLDivElement;
 
 
-/**
- * DISPLAY VIRUS IN RANDOM POSITION VARIABLE
-*/
-
-const gridSize = 10; // 10x10 grid
-const totalCells = gridSize * gridSize;
-
 
 /**
  * CREATE GRID
 */
-for (let i = 1; i <= totalCells; i++) {
+for (let i = 1; i <= 100; i++) {
 	gridContainerEl.innerHTML += `<div class="cells">${i}</div>`;
-};
+}; //change later to johans example of creating grid (not prio)
+
 
 
 /**
  * FUNCTIONS
- */
+*/
 
-function placeObject() {
+function placeObject(position: number) {
 	const cellsEl = document.querySelectorAll(".cells");
-	
-	// Remove any other object (number and virus) from the grid
-	cellsEl.forEach(cell => cell.innerHTML = "");	
-	
-	// Calculate the random position of the virus
-    const randomIndex = Math.floor(Math.random() * totalCells);
+
+	//remove all objects from grid (numbers and previous virus positions)
+	cellsEl.forEach(cell => cell.innerHTML = "");
 
 	// Place the virus at the random index
-	cellsEl[randomIndex].innerHTML = "<span class='object'>🦠</span>";
+	cellsEl[position].innerHTML = "<span class='object'>🦠</span>";
 	
-	// When user clicks on the object, restart the function and place the object at a new random position
-	const objectEl = document.querySelector('.object') as HTMLDivElement;
-	objectEl.addEventListener('click', placeObject);
+	// When a user clicks on the object, restart the function and place the object at a new random position
+	const objectEl = document.querySelector('.object') as HTMLSpanElement;
+	objectEl.addEventListener('click', () => {
+		socket.emit('gameRound');
+	});
 };
-
-
-
-
 
 
 
 /**
  * Socket Event Listeners
 */
+// start first game round when user connects
+socket.emit('gameRound');
+
+
+// Listen for when the server emits the virus position
+socket.on('virusPosition', (position: number) => {
+	console.log('Virus spawned at position:', position);
+	placeObject(position);
+});
+
+
 
 // Listen for when connection is established
 socket.on("connect", () => {
@@ -80,11 +80,3 @@ socket.on("disconnect", () => {
 socket.io.on("reconnect", () => {
 	console.log("😊 Reconnected to server:", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
-
-
-
-
-
-
-// Initialize the game with placing a virus at a random position
-placeObject();
