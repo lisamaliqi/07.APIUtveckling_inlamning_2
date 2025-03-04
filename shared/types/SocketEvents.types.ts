@@ -8,4 +8,5 @@ export interface ServerToClientEvents {
 // Events emitted by the client to the server
 export interface ClientToServerEvents {
     gameRound: () => void; //round: number inside gameRound parameter?
+    userJoinRequset: (username:string, ) => void;
 }

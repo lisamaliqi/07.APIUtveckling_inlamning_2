@@ -14,8 +14,22 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOS
 
 /**
  * ELEMENTS
- */
+*/
 const gridContainerEl = document.querySelector('#grid-container') as HTMLDivElement;
+const logginWrapperEl = document.querySelector('#login-wrapper') as HTMLDivElement;
+const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
+
+//Form
+const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
+const usernameInputEl = document.querySelector("#username") as HTMLInputElement
+
+
+
+/**
+ * VARIABLES
+ */
+let username: string | null = null;
+let gameRoomId: string | null =null
 
 
 
@@ -53,6 +67,7 @@ function placeObject(position: number) {
 /**
  * Socket Event Listeners
 */
+
 // start first game round when user connects
 socket.emit('gameRound');
 
@@ -64,19 +79,47 @@ socket.on('virusPosition', (position: number) => {
 });
 
 
-
 // Listen for when connection is established
 socket.on("connect", () => {
 	console.log("💥 Connected to server", socket.io.opts.hostname + ":" + socket.io.opts.port);
 	console.log("🔗 Socket ID:", socket.id);
 });
 
+
 // Listen for when server got tired of us
 socket.on("disconnect", () => {
 	console.log("🥺 Got disconnected from server", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
 
+
 // Listen for when we're reconnected (either due to our or the servers connection)
 socket.io.on("reconnect", () => {
 	console.log("😊 Reconnected to server:", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
+
+
+
+/**
+ * EVENT LISTENERS
+*/
+
+//Save Username
+joinGameEl.addEventListener("submit", (e) => {	
+	e.preventDefault();
+
+	//hide login-wrapper and show game-wrapper
+	logginWrapperEl.classList.add("hide");
+	gamePageEl.classList.remove("hide");
+
+	//get username
+	username = usernameInputEl.value.trim();
+	gameRoomId 
+	// no username alert the user
+	if(!username){
+		alert("No username");
+		return;
+	};
+
+	socket.emit("userJoinRequset",username,);
+});
+

@@ -4,6 +4,7 @@
 import Debug from "debug";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
+import prisma from "../prisma";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -24,9 +25,24 @@ export const handleConnection = (
 ) => {
 	debug("🙋 A user connected", socket.id);
 
+
 	socket.on('gameRound', () => {
 		debug("🎮 Game round started");
 		io.emit('virusPosition', calculateVirusPosition());
+	});
+
+
+	socket.on("userJoinRequset", async (username,) => {
+		const user = await prisma.user.create({
+			data:{
+				id: socket.id,
+				username: username,
+				gameRoomId: null,
+				score: null,
+				timer: null,
+			},
+		});
+		debug("create a user", user);
 	});
 
 	// Handle a user disconnecting
@@ -34,3 +50,5 @@ export const handleConnection = (
 		debug("👋 A user disconnected", socket.id);
 	});
 };
+
+

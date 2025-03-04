@@ -4,20 +4,36 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="icon" href="https://fav.farm/😎" />
+	<link rel="icon" href="https://fav.farm/👾" />
 	<link rel="stylesheet" href="/src/assets/scss/style.scss">
-	<title>FED24 API-utveckling Realtime Frontend</title>
+	<title>FED24 API-utveckling Grupp 5</title>
 </head>
 
 <body>
 	<div id="app">
-
-		<!-- GAME PAGE -->
-		<div class="game-page">
-			<div id="grid-container"></div>
+		<!-- CREATE USER PAGE -->
+		<div id="login-wrapper" class="container justify-content-evenly">
+			
+			<div class="mb-3" id="activeGames"> Active Games </div>
+			
+			<form id="login-form">
+				<div class="mb-3">
+					<input type="text" id="username" class="form-control form-control-lg" required placeholder="enter a username">
+				</div>
+				
+				<button type="submit" id="joinBtn" class="btn btn-success">Join!</button>
+			</form>
+			
+			<div class="mb-3" id="top10Games"> Top 10 Games </div>
+			
 		</div>
 
 
+		<!-- GAME PAGE -->
+		<div class="game-page hide">
+			<div id="grid-container"></div>
+		</div>
+		
 	</div>
 
 	<script type="module" src="/src/main.ts"></script>
