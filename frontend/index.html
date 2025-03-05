@@ -12,7 +12,7 @@
 <body>
 	<div id="app">
 		<!-- CREATE USER PAGE -->
-		<div id="login-wrapper" class="container justify-content-evenly">
+		<div id="login-wrapper" class="container justify-content-evenly hide">
 			
 			<div class="mb-3" id="activeGames"> Active Games </div>
 			
@@ -29,11 +29,21 @@
 		</div>
 
 
-		<!-- GAME PAGE -->
-		<div class="game-page hide">
-			<div id="grid-container"></div>
-		</div>
 		
+	</div>
+	<!-- GAME PAGE -->
+	<div class="game-page d-flex flex-column justify-content-center align-items-center">
+		<div id="scoreboard">
+			<div class="d-flex justify-content-center">17:10</div>
+			<div class="d-flex justify-content-center p-4">
+				<div class="p-4" id="username">Username: </div>
+				<div class="p-4" id="time">Time: 0</div>
+				<div class="p-4" id="score">6 - 0</div>
+				<div class="p-4" id="time">Time: 0</div>
+				<div class="p-4" id="username">Username: </div>
+			</div>
+		</div>
+		<div id="grid-container"></div>
 	</div>
 
 	<script type="module" src="/src/main.ts"></script>
