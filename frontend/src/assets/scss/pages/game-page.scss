@@ -20,13 +20,16 @@ body {
 #scoreboard{
     background-color: green($color: #000000);
     border: 2px solid black;
-    width: 50vw; /* Adjust width as needed */
-    height: 50vw; /* Adjust height as needed to maintain square grid items */
-    width: 80%; /* Fixed height for 10 items */
+    width: 80%; 
     height: 40%;
-    padding: 5px;
+    max-width: 1500px;
     margin: 5px;
+    font-size: 30px;
 
+}
+
+#score{
+    font-size: 60px;
 }
 
 #grid-container {
@@ -37,7 +40,7 @@ body {
     border: 2px solid black;
     width: 80vw; /* Adjust width as needed */
     height: 70vh; /* Adjust height as needed to maintain square grid items */
-    max-width: 1500px; /* Fixed height for 10 items */
+    max-width: 1500px;
     //height: 80%;
     margin-left: 5px;
 
