@@ -113,13 +113,21 @@ joinGameEl.addEventListener("submit", (e) => {
 
 	//get username
 	username = usernameInputEl.value.trim();
-	gameRoomId 
+
+	//gameRoomId // behövs inte än?
+
 	// no username alert the user
 	if(!username){
-		alert("No username");
+		alert("No username entered");
 		return;
 	};
 
-	socket.emit("userJoinRequset",username,);
+	socket.emit("userJoinRequest", username);
+	console.log('Joining game with username:', username);
 });
+
+socket.on("userJoined", ({ username, gameRoomId }) => {
+	console.log(`${username} joined the game room: ${gameRoomId}`);
+});
+
 
