@@ -17,6 +17,15 @@ const calculateVirusPosition = () => {
 	return Math.floor(Math.random() * 100);
 };
 
+const startGameRound = (io: Server<ClientToServerEvents, ServerToClientEvents>, gameRoomId: string) => {
+	debug("🎮 Game round started");
+	const virusPosition = calculateVirusPosition();
+	io.to(gameRoomId).emit('virusPosition', virusPosition);
+};
+
+
+
+
 // Handle a user connecting
 export const handleConnection = (
 	socket: Socket<ClientToServerEvents, ServerToClientEvents>,
@@ -26,9 +35,11 @@ export const handleConnection = (
 	debug("🙋 A user connected", socket.id);
 
 
-	socket.on('gameRound', () => {
+	socket.on('gameRound', (gameRoomId) => {
 		debug("🎮 Game round started");
-		io.emit('virusPosition', calculateVirusPosition());
+		// io.emit('virusPosition', calculateVirusPosition());
+		// io.to(gameRoomId).emit('virusPosition', calculateVirusPosition());
+		startGameRound(io, gameRoomId);
 	});
 
 
@@ -59,8 +70,8 @@ export const handleConnection = (
             const availableGameRoom = allGameRooms.find(room => room.users.length < 2);
 			debug("Available game room", availableGameRoom);
 
-			// If a game room is available and has less than 2 users, join the game room
-			if( availableGameRoom && availableGameRoom.users.length < 2){
+			// If a game room is available, join room
+			if( availableGameRoom){
 				//add the user to the gameroom
 				gameRoomId = availableGameRoom.id;
 				debug("Joining game room", gameRoomId);
@@ -92,6 +103,9 @@ export const handleConnection = (
 		socket.join(gameRoomId);
 
 		io.to(gameRoomId).emit("userJoined", { username, gameRoomId });
+
+		// Start the game round in the specific room
+		startGameRound(io, gameRoomId);
 
 		} catch (err) {
 			debug("Error joining game room", err);

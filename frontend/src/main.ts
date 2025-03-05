@@ -58,7 +58,12 @@ function placeObject(position: number) {
 	// When a user clicks on the object, restart the function and place the object at a new random position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
 	objectEl.addEventListener('click', () => {
-		socket.emit('gameRound');
+		if (!gameRoomId) {
+			console.error('gameRoomId is null');
+			return;
+		};
+
+		socket.emit('gameRound', gameRoomId);
 	});
 };
 
@@ -67,10 +72,6 @@ function placeObject(position: number) {
 /**
  * Socket Event Listeners
 */
-
-// start first game round when user connects
-socket.emit('gameRound');
-
 
 // Listen for when the server emits the virus position
 socket.on('virusPosition', (position: number) => {
