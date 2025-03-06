@@ -40,6 +40,50 @@ export const handleConnection = (
 	});
 
 
+	// 2.
+	socket.on("virusClicked", async ({ gameRoomId, userId }) => {
+		debug("🦠 Virus clicked by user:", userId);
+
+		try {
+			//Find the user that clicked the virus and update their score with +1
+			const user = await prisma.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					score: {
+						increment: 1 //+ score by 1
+					},
+				},
+			});
+
+			debug(`✅ Updated score for ${user.username}, new score is ${user.score}:`);
+
+			//Emit the updated scores to all players in the room
+			const usersInRoom = await prisma.user.findMany({
+				where: {
+					gameRoomId
+				},
+				select: {
+					id: true,
+					username: true,
+					score: true,
+					timer: true, //add timer later
+				},
+			});
+
+			io.to(gameRoomId).emit("updateScores", usersInRoom);
+
+			// Start new round
+			const virusPosition = calculateVirusPosition();
+			io.to(gameRoomId).emit("virusPosition", virusPosition);
+
+		} catch (err) {
+			debug("Error updating score", err);
+		}
+	});
+
+
 
 	socket.on("userJoinRequest", async (username) => {
 		debug("👤 User join request", username);
