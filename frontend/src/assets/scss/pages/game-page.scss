@@ -5,10 +5,31 @@ body {
     margin: 5%;
     padding: 0;
     background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
+    //display: flex;
+    //justify-content: center;
+    //align-items: flex-end;
+    height: 100vh; /* Full viewport height */ 
+    
+}
+
+
+
+
+
+
+#scoreboard{
+    background-color: green($color: #000000);
+    border: 2px solid black;
+    width: 80%; 
+    height: 40%;
+    max-width: 1500px;
+    margin: 5px;
+    font-size: 30px;
+
+}
+
+#score{
+    font-size: 60px;
 }
 
 #grid-container {
@@ -17,11 +38,11 @@ body {
     grid-template-rows: repeat(10, 1fr);    /* Max 10 rows */
     background-color: #ddd;
     border: 2px solid black;
-    width: 50vw; /* Adjust width as needed */
-    height: 50vw; /* Adjust height as needed to maintain square grid items */
-    max-width: 500px; /* Fixed width for 10 items */
-    max-width: 500px; /* Fixed height for 10 items */
-    box-sizing: border-box;
+    width: 80vw; /* Adjust width as needed */
+    height: 70vh; /* Adjust height as needed to maintain square grid items */
+    max-width: 1500px;
+    //height: 80%;
+    margin-left: 5px;
 
     .cells {
         background-color: lightblue;

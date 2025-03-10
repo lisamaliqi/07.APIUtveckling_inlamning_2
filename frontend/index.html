@@ -33,13 +33,24 @@
 			<p>Waiting for player to join</p>
 		 </div>
 
-
-		<!-- GAME PAGE -->
-		<div class="game-page hide">
-			<div id="grid-container"></div>
-		</div>
-		
+		 <!-- GAME PAGE -->
+		 <div class="game-page d-flex flex-column justify-content-center align-items-center hide">
+			 <div id="scoreboard">
+				 <div class="d-flex justify-content-center">17:10</div>
+				 <div class="d-flex justify-content-between align-items-center">
+					 <div class="p-4 text-primary" id="username">Username: </div>
+					 <div class="" id="time">07:36</div>
+					 <div class="" id="score">6 - 0</div>
+					 <div class="" id="time">08:20</div>
+					 <div class="p-4 text-danger" id="username">Username: </div>
+				 </div>
+			 </div>
+			 <div id="grid-container"></div>
+		 </div>
+		 
 	</div>
+
+
 
 	<script type="module" src="/src/main.ts"></script>
 </body>
