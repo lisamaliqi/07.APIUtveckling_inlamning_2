@@ -135,6 +135,21 @@ export const handleConnection = (
 
 
 
+	socket.on('getAllActiveRooms', async () => {
+		//Get all the gameRooms that are in the database, inlduding the users in the room
+		const allActiveGameRooms = await prisma.gameRoom.findMany({
+			include: {
+				users: true
+			},
+		});
+
+		debug("All active game rooms", allActiveGameRooms);
+
+		//Send all the active game rooms to the client (frontend)
+		socket.emit('allActiveGameRooms', allActiveGameRooms);
+	});
+
+
 	// Handle a user disconnecting
 	socket.on("disconnect", () => {
 		debug("👋 A user disconnected", socket.id);

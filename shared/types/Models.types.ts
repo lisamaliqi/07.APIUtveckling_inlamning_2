@@ -5,6 +5,6 @@ export interface User {
     id: string,
 	username: string,
 	gameRoomId : string,
-	score: number,
-	timer: number,
+	score: number | null,
+	timer: number | null,
 } 

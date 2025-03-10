@@ -19,6 +19,7 @@ const gridContainerEl = document.querySelector('#grid-container') as HTMLDivElem
 const loginWrapperEl = document.querySelector('#login-wrapper') as HTMLDivElement;
 const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
 const waitingForPlayerEl = document.querySelector('.waiting-for-player') as HTMLDivElement;
+const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
 
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
@@ -77,6 +78,7 @@ function placeObject(position: number) { //Place virus on grid
 socket.on("connect", () => {
 	console.log("💥 Connected to server", socket.io.opts.hostname + ":" + socket.io.opts.port);
 	console.log("🔗 Socket ID:", socket.id);
+	socket.emit('getAllActiveRooms');
 });
 
 // Listen for when server got tired of us
@@ -89,6 +91,35 @@ socket.io.on("reconnect", () => {
 	console.log("😊 Reconnected to server:", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
 
+
+
+socket.on('allActiveGameRooms', (allActiveGameRooms) => {
+	console.log('All active game rooms:', allActiveGameRooms);
+
+	//For each room, do this:
+	allActiveGameRooms.forEach((room) => {
+		//create a new game room list element
+		const roomEl = document.createElement('li');
+
+		//Create a list of users in the room that shows username and score
+		const usersList = room.users.map((user) => {
+            return `<li class="user">
+                        <span class="username">${user.username}</span> - 
+                        <span class="score">${user.score}</span>
+                    </li>`;
+        }).join(`<span class="versus"> VS </span>`);
+
+		//Set the innerHTML of the room element to the list of users that are in the room
+		roomEl.innerHTML = `
+            <ul class="users">
+                ${usersList}
+            </ul>
+        `;
+
+		//Append the game room element to the active games section
+        activeGamesEl.appendChild(roomEl);
+	});
+});
 
 
 //Listen for when the server emits the usersInRoom event
