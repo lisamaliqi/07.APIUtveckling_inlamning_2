@@ -34,3 +34,40 @@ body {
 }
 
 
+
+
+#won-page {
+    background-color: lightgreen;
+}
+
+#lost-page {
+    background-color: lightcoral;
+}
+
+#draw-page {
+    background-color: lightblue;
+}
+
+
+.result-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    height: 100vh; /* Take up the full viewport height */
+    width: 100vw; /* Take up the full viewport width */
+    
+    .play-again {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: white;
+    }
+    
+    .play-again:hover {
+        background-color: rgb(92, 92, 92);
+        color: white;
+    }
+}
+
