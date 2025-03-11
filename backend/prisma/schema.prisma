@@ -9,9 +9,9 @@ datasource db {
 
 
 model GameRoom {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-
-  users   User[]
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  gameRound   Int
+  users       User[]
 }
 
 /* model ScoreBoard {
