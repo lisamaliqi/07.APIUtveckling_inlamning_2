@@ -9,9 +9,9 @@ datasource db {
 
 
 model GameRoom {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-
-  users   User[]
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  gameRound   Int?
+  users       User[]
 }
 
 /* model ScoreBoard {
@@ -24,7 +24,7 @@ model User {
   id            String      @id @map("_id")
   username      String
   gameRoomId    String?      @db.ObjectId
-  score         Int?         
+  score         Int         
   timer         Int?
 
   room          GameRoom?    @relation(fields: [gameRoomId], references: [id])

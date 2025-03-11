@@ -60,11 +60,13 @@ function placeObject(position: number) { //Place virus on grid
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
 	objectEl.addEventListener('click', () => {
-		if (!gameRoomId) {
-			console.error('game Room doesnt exist');
+		if (!gameRoomId || !socket.id) {
+			console.error('game Room doesnt exist or socket id is missing');
 			return;
 		};
-		socket.emit('gameRound', gameRoomId);
+
+		//Emit event to server (backend) which one of the users clicked the virus
+		socket.emit('virusClickedByUser', { gameRoomId, userId: socket.id });
 	});
 };
 
@@ -91,6 +93,14 @@ socket.io.on("reconnect", () => {
 	console.log("😊 Reconnected to server:", socket.io.opts.hostname + ":" + socket.io.opts.port);
 });
 
+
+//Listen for when the server emits the updateScores event
+socket.on("updateScores", (users) => {
+    console.log("Updated scores:", users);
+    users.forEach((user) => { //For each user, log their username and score
+        console.log(`${user.username}: ${user.score} points`);
+    });
+});
 
 
 socket.on('allActiveGameRooms', (allActiveGameRooms) => {

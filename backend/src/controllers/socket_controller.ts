@@ -41,6 +41,64 @@ export const handleConnection = (
 
 
 
+	socket.on("virusClickedByUser", async ({ gameRoomId, userId }) => {
+		debug("Virus clicked by user:", userId);
+
+		try {
+			//Find the user that clicked the virus and update their score with +1
+			const user = await prisma.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					score: {
+						increment: 1 //+ score by 1
+					},
+				},
+			});
+
+			debug(`Updated score for ${user.username}, new score is ${user.score}:`);
+
+			//Emit the updated scores to all players in the room
+			const usersInRoom = await prisma.user.findMany({
+				where: {
+					gameRoomId
+				},
+				select: {
+					id: true,
+					username: true,
+					score: true,
+					timer: true, //add timer later
+				},
+			});
+
+			//add +1 in the gameRound when the virus is clicked
+			const updateGameRound = await prisma.gameRoom.update({
+				where: {
+					id: gameRoomId
+				},
+				data: {
+					gameRound: {
+						increment: 1 //+ gameRound by 1
+					},
+				},
+			});
+
+			debug(`Updated game round for ${gameRoomId}, new game round is ${updateGameRound.gameRound}:`);
+
+			io.to(gameRoomId).emit("updateScores", usersInRoom);
+
+			// Start new round
+			const virusPosition = calculateVirusPosition();
+			io.to(gameRoomId).emit("virusPosition", virusPosition);
+
+		} catch (err) {
+			debug("Error updating score", err);
+		}
+	});
+
+
+
 	socket.on("userJoinRequest", async (username) => {
 		debug("👤 User join request", username);
 
@@ -77,7 +135,9 @@ export const handleConnection = (
 			} else { //If no game room with less than 2 users is found, create a new game room
 				//Create a new game room
 				const newGameRoom = await prisma.gameRoom.create({
-					data: {},
+					data: {
+						gameRound: 1,
+					},
 				});
 
 				//Add the id of new game room to gameRoomId
