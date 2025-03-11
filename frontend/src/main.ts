@@ -32,6 +32,7 @@ const usernameInputEl = document.querySelector("#username") as HTMLInputElement
  */
 let username: string | null = null;
 let gameRoomId: string | null =null
+let timerStart: number; 
 
 
 
@@ -56,6 +57,9 @@ function placeObject(position: number) { //Place virus on grid
 
 	//Place the virus at the random index, index is taken from "virusPosition" socket event
 	cellsEl[position].innerHTML = "<span class='object'>🦠</span>";
+
+	//start timer
+	timerStart = Date.now();
 	
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
@@ -65,10 +69,14 @@ function placeObject(position: number) { //Place virus on grid
 			return;
 		};
 
+		//calculate the reaction time
+		const reactionTime = Date.now() - timerStart;
+
+		//hide the virus when clicked immediately
 		objectEl.classList.add('hide');
 
 		//Emit event to server (backend) which one of the users clicked the virus
-		socket.emit('virusClickedByUser', { gameRoomId, userId: socket.id });
+		socket.emit('virusClickedByUser', { gameRoomId, userId: socket.id, reactionTime });
 	});
 };
 
