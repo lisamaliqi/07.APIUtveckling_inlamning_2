@@ -77,9 +77,7 @@ export const handleConnection = (
 			} else { //If no game room with less than 2 users is found, create a new game room
 				//Create a new game room
 				const newGameRoom = await prisma.gameRoom.create({
-					data: {
-						gameRound: 1,
-					},
+					data: {},
 				});
 
 				//Add the id of new game room to gameRoomId
@@ -135,6 +133,21 @@ export const handleConnection = (
 		socket.emit("usersInRoom", gameRoom.users.length);
 	});
 
+
+
+	socket.on('getAllActiveRooms', async () => {
+		//Get all the gameRooms that are in the database, inlduding the users in the room
+		const allActiveGameRooms = await prisma.gameRoom.findMany({
+			include: {
+				users: true
+			},
+		});
+
+		debug("All active game rooms", allActiveGameRooms);
+
+		//Send all the active game rooms to the client (frontend)
+		socket.emit('allActiveGameRooms', allActiveGameRooms);
+	});
 
 
 	// Handle a user disconnecting
