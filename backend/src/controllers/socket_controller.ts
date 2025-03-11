@@ -17,6 +17,10 @@ const calculateVirusPosition = () => { //Calculate the random position the virus
 	return Math.floor(Math.random() * 100);
 };
 
+const calculateRandomDelay = ()=> { //Calculate the random delay for the virus to appear on the grid, between 1500ms and 10000ms
+	return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
+};
+
 
 
 // Handle a user connecting
@@ -35,8 +39,14 @@ export const handleConnection = (
 		//make the position of the virus random with calculateVirusPosition function
 		const virusPosition = calculateVirusPosition();
 
-		//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
-		io.to(gameRoomId).emit('virusPosition', virusPosition);
+		const delay = calculateRandomDelay();
+
+		setTimeout(() => {
+			//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+			io.to(gameRoomId).emit('virusPosition', virusPosition);
+
+		}, delay);
+
 	});
 
 
@@ -90,7 +100,16 @@ export const handleConnection = (
 
 			// Start new round
 			const virusPosition = calculateVirusPosition();
-			io.to(gameRoomId).emit("virusPosition", virusPosition);
+			// io.to(gameRoomId).emit("virusPosition", virusPosition);
+
+			const delay = calculateRandomDelay();
+
+			setTimeout(() => {
+				//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+				io.to(gameRoomId).emit('virusPosition', virusPosition);
+				debug('the delay is:', delay);
+
+			}, delay);
 
 		} catch (err) {
 			debug("Error updating score", err);
