@@ -41,7 +41,7 @@ export const handleConnection = (
 
 
 
-	socket.on("virusClicked", async ({ gameRoomId, userId }) => {
+	socket.on("virusClickedByUser", async ({ gameRoomId, userId }) => {
 		debug("Virus clicked by user:", userId);
 
 		try {

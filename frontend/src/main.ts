@@ -65,7 +65,7 @@ function placeObject(position: number) { //Place virus on grid
 		};
 
 		//Emit event to server (backend) which one of the users clicked the virus
-		socket.emit('virusClicked', { gameRoomId, userId: socket.id });
+		socket.emit('virusClickedByUser', { gameRoomId, userId: socket.id });
 	});
 };
 

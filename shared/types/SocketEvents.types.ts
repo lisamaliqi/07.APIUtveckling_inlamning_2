@@ -13,5 +13,5 @@ export interface ClientToServerEvents {
     gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
-    virusClicked: (data: { gameRoomId: string; userId: string }) => void; //4
+    virusClickedByUser: (data: { gameRoomId: string; userId: string }) => void; //4
 }
