@@ -152,13 +152,6 @@ socket.on('usersInRoom', (amountOfUsers: number) => {
 		gamePageEl.classList.remove('hide');
 		
 		console.log('Starting game...');
-		
-		//start the game by emitting the gameRound event, the users plays the first round of the game
-		if (!gameRoomId) {
-			console.error('game Room doesnt exist');
-			return;
-		};
-		socket.emit('gameRound', gameRoomId);
 	};
 });
 

@@ -51,7 +51,7 @@ export const handleConnection = (
 
 
 	socket.on("virusClickedByUser", async ({ gameRoomId, userId, reactionTime }) => {
-		debug(`Virus clicked by user §{userId}, reaction time is: ${reactionTime}`);
+		debug(`Virus clicked by user ${userId}, reaction time is: ${reactionTime}`);
 
 		try {
 			//Find the user that clicked the virus and update their timer with the reaction time
@@ -138,11 +138,11 @@ export const handleConnection = (
 				// Start new round
 				const virusPosition = calculateVirusPosition();
 				const delay = calculateRandomDelay();
+				debug('the delay is:', delay);
 
 				setTimeout(() => {
 					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
 					io.to(gameRoomId).emit('virusPosition', virusPosition);
-					debug('the delay is:', delay);
 				}, delay);
 
 				// Reset timers for the next round to NULL
@@ -227,6 +227,30 @@ export const handleConnection = (
 
 			//Emit to the client (frontend) that the user has joined the game room
 			io.to(gameRoomId).emit("userJoined", { username, gameRoomId });
+
+			const usersInRoom = await prisma.user.findMany({
+				where:	{
+					gameRoomId
+				},
+			});
+
+			debug('users in game room: ', usersInRoom)
+			debug('useres in game room length: ', usersInRoom.length)
+
+			if(usersInRoom.length === 2) {
+				debug('starting game in gameroom: ', gameRoomId);
+				io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
+
+				// Start new round
+				const virusPosition = calculateVirusPosition();
+				const delay = calculateRandomDelay();
+				debug('the delay is:', delay);
+
+				setTimeout(() => {
+					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+					io.to(gameRoomId).emit('virusPosition', virusPosition);
+				}, delay);
+			};
 
 		} catch (err) {
 			debug("Error joining game room", err);
