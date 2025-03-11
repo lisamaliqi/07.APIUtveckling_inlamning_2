@@ -77,7 +77,9 @@ export const handleConnection = (
 			} else { //If no game room with less than 2 users is found, create a new game room
 				//Create a new game room
 				const newGameRoom = await prisma.gameRoom.create({
-					data: {},
+					data: {
+						gameRound: 1,
+					},
 				});
 
 				//Add the id of new game room to gameRoomId
