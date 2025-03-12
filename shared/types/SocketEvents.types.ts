@@ -7,7 +7,7 @@ export interface ServerToClientEvents {
     allActiveGameRooms: (allActiveGameRooms: {id: string; users: User[] }[]) => void;
     usersInRoom: (amountOfUsers: number) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
-    userLeft: (username:string) => void
+    userLeft: (username: string) => void;
     virusPosition: (position: number) => void;
     updateScores: (users: { id: string; username: string; score: number }[]) => void; //3
     gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?
@@ -20,6 +20,6 @@ export interface ClientToServerEvents {
     getAllActiveRooms: () => void;
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
-    userAFK: () => void
+    userAFK: () => void;
     virusClickedByUser: (data: { gameRoomId: string; userId: string; reactionTime: number }) => void; //4
 }

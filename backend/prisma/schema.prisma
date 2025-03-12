@@ -14,18 +14,31 @@ model GameRoom {
   users       User[]
 }
 
-/* model ScoreBoard {
-  id      String  @id @map("_id")
+model ScoreBoard {
+   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+   gameRoomId  String  @db.ObjectId
+   users       ScoreBoardUser[]
+ 
+   // room        GameRoom?   @relation(fields: [gameRoomId], references: [id])
+ }
 
-  users   User[]
-} */
+
+ model ScoreBoardUser {
+   id            String   @id @map("_id") 
+   username      String
+   score         Int
+   scoreboardId  String?   @db.ObjectId
+ 
+   scoreboard    ScoreBoard? @relation(fields: [scoreboardId], references: [id])
+ }
+
 
 model User {
   id            String      @id @map("_id")
   username      String
-  gameRoomId    String?      @db.ObjectId
+  gameRoomId    String      @db.ObjectId
   score         Int         
   timer         Float?
 
-  room          GameRoom?    @relation(fields: [gameRoomId], references: [id])
+  room          GameRoom?    @relation(fields: [gameRoomId], references: [id], onDelete: Cascade)
 }
