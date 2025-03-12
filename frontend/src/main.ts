@@ -151,6 +151,7 @@ socket.on("connect", () => {
 // Listen for when server got tired of us
 socket.on("disconnect", () => {
 	console.log("🥺 Got disconnected from server", socket.io.opts.hostname + ":" + socket.io.opts.port);
+	socket.emit("userAFK")
 });
 
 // Listen for when we're reconnected (either due to our or the servers connection)
@@ -253,13 +254,6 @@ socket.on("gameEnded", ({ scores }) => {
 	//call function that calculates what result-page will be visible for the user (depending on if they won, lost or draw)
     displayFinalScores(scores);
 });
-
-
-
-
-
-//socket.emit('userAFK',)
-
 
 
 /**

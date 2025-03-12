@@ -379,7 +379,7 @@ export const handleConnection = (
 		debug("👋 A user disconnected", socket.id);
 
 
-		const getUser = async (userId:string) => {
+		 const getUser = async (userId:string) => {
 
 			const user = await prisma.user.findUnique({
 				where: {
@@ -410,21 +410,28 @@ export const handleConnection = (
 		debug("user dont exist")
 		return
 	}
-	const deleteUser = async (userId:string) => {
-		return await prisma.user.delete({
-			where: {
-				id:userId
-			},
-		})
-	}
+
+	const deleteUser = async (userId: string) => {
+		// Hämta användaren först
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+		});
+
+		// Kolla om användaren finns
+		if (!user) return;
+
+		// Om användaren finns, radera den
+		await prisma.user.delete({
+			where: { id: userId },
+		});
+
+	};
+
+
+
 	deleteUser(socket.id)
 
-
-
-
-
-
-		});
+	});
 };
 
 
