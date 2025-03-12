@@ -361,6 +361,7 @@ export const handleConnection = (
 			include: {
 				users: true,
 			},
+			take: -10,
 		});
 
 		debug('10 last games played: ', last10GamesPlayed);
