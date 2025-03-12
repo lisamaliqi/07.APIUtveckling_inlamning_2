@@ -123,15 +123,39 @@ function displayFinalScores(scores: { username: string; score: number }[]) { //d
     //Show if the user won, lost or if its a draw 
     if (scores[0].score > scores[1].score && scores[0].username === username) {
 		// Player won
-        document.querySelector('#won-page')?.classList.remove('hide');
+        const wonPageEl = document.querySelector('#won-page');
+		if(wonPageEl) {
+			wonPageEl.classList.remove('hide');
+			wonPageEl.innerHTML = `
+				 <h1>YOU WON!</h1>
+				 <div class="final-scores"></div> 
+				 <button class="play-again btn">Play Again</button>
+			`;
+		};
 		showScoreAfterGame('#won-page');
     } else if (scores[0].score > scores[1].score && scores[0].username !== username) {
         // Player lost
-        document.querySelector('#lost-page')?.classList.remove('hide');
+        const lostPageEl = document.querySelector('#lost-page');
+		if(lostPageEl) {
+			lostPageEl.classList.remove('hide');
+			lostPageEl.innerHTML = `
+				 <h1>YOU LOST!</h1>
+				 <div class="final-scores"></div> 
+				 <button class="play-again btn">Play Again</button>
+			`;
+		};
 		showScoreAfterGame('#lost-page');
 	} else {
         // It's a draw
-        document.querySelector('#draw-page')?.classList.remove('hide');
+        const drawPageEl = document.querySelector('#draw-page');
+		if(drawPageEl) {
+			drawPageEl.classList.remove('hide');
+			drawPageEl.innerHTML = `
+				 <h1>ITS A DRAW!</h1>
+				 <div class="final-scores"></div> 
+				 <button class="play-again btn">Play Again</button>
+			`;
+		};
 		showScoreAfterGame('#draw-page');
 	};
 
@@ -271,10 +295,11 @@ socket.on("userJoined", ({ username, gameRoomId: roomId }) => {
 	socket.emit('get10LastGamesPlayed');
 });
 
+
 socket.on("userLeft",(username) =>{
 
 	rageQuitEl.innerHTML = `
-		<h1>${username} has rage quit you won</h1>
+		<h1>${username} has rage quit, you won</h1>
 		<button class="play-again btn">Play Again</button>
 	`;
 	rageQuitEl.classList.remove("hide");

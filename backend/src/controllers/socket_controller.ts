@@ -435,7 +435,7 @@ export const handleConnection = (
 
 
 	// Handle a user disconnecting
-	socket.on("disconnect", async () => {
+	socket.on("disconnect", () => {
 		handleDisconnectOrRageQuit(socket);
 	});
 };
