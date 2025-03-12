@@ -1,5 +1,9 @@
 body {
-    background-color: $bg-color;
+    background-image: url("src/assets/img/mellobackround.png");
+    height: 100vh;
+    width: 100vw;
+
+    // cursor: url('src/img/cursor.png'), auto; // basturis i .object i game-page.scss
 }
 
 .hide {
@@ -13,15 +17,15 @@ body {
     display: flex;
     align-items: center;
 
-    #login-forms {
+    #login-form {
         margin: 0 auto;
         text-align: center;
     }
 
     #activeGames {
-    margin-top: 100px ;
+    margin-top: 10% ;
     background-color: lightgray;
-    width: 300px;
+    width: 25%;
     height: 500px;
 
          .users {
@@ -38,14 +42,17 @@ body {
     }
 
     #top10Games {
-    margin-top: 100px;
+    margin-top: 10%;
     background-color: lightgray ;
-    width: 300px;
+    width: 25%;
     height: 500px; 
     }
 }
 
-
+#waiting-text{
+    font-size: 20px;
+    color: white;
+}
 
 
 #won-page {

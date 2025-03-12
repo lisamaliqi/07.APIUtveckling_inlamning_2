@@ -12,25 +12,33 @@ body {
     
 }
 
-
-
-
-
-
 #scoreboard{
-    background-color: green($color: #000000);
+    background-color: white;
     border: 2px solid black;
-    width: 80%; 
+    justify-content: center;
+    align-items: center;
+    width: 80vw; 
     height: 40%;
     max-width: 1500px;
     margin: 5px;
     font-size: 30px;
 
+
+    .playing-user{
+        #users.name{
+            font-weight: bold; //?
+        }
+        color: skyblue;
+    }
+    .opponent-user{
+        color: magenta;
+    }
 }
 
 #score{
     font-size: 60px;
 }
+
 
 #grid-container {
     display: grid;
@@ -45,7 +53,7 @@ body {
     margin-left: 5px;
 
     .cells {
-        background-color: lightblue;
+        background-color: #ddd;
         border: 1px solid black;
         display: flex;
         justify-content: center;
@@ -58,7 +66,7 @@ body {
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
+            cursor: pointer; //cursor:url('björkris.png'), auto;
         }
     }
 }

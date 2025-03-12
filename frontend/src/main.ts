@@ -3,6 +3,7 @@ import {
 	ClientToServerEvents,
 	ServerToClientEvents,
 } from "@shared/types/SocketEvents.types";
+import { User } from "@shared/types/Models.types";
 import "./assets/scss/style.scss";
 
 const SOCKET_HOST = import.meta.env.VITE_SOCKET_HOST;
@@ -20,6 +21,11 @@ const loginWrapperEl = document.querySelector('#login-wrapper') as HTMLDivElemen
 const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
 const waitingForPlayerEl = document.querySelector('.waiting-for-player') as HTMLDivElement;
 const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
+//const currentScoreEl = document.querySelector('#score') as HTMLDivElement; // ny
+//const reactionTimesEl = document.querySelector('#time') as HTMLDivElement; // ny
+//const playingUserEl = document.querySelector('#users-name') as HTMLDivElement; // ny
+//const opponentUserEl = document.querySelector('#opponents-name') as HTMLDivElement; // ny
+//const scoreboard = document.querySelector('#scoreboard') as HTMLDivElement; // ny
 
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
@@ -55,7 +61,7 @@ function placeObject(position: number) { //Place virus on grid
 	cellsEl.forEach(cell => cell.innerHTML = "");
 
 	//Place the virus at the random index, index is taken from "virusPosition" socket event
-	cellsEl[position].innerHTML = "<span class='object'>🦠</span>";
+	cellsEl[position].innerHTML = "<span class='object'><img src='/src/assets/img/ledsen-mans2.0.png' width='100px' alt='sad måns'></span>";
 	
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
@@ -100,6 +106,31 @@ socket.on("updateScores", (users) => {
     users.forEach((user) => { //For each user, log their username and score
         console.log(`${user.username}: ${user.score} points`);
     });
+});
+
+  
+socket.on('displayGameResults', (users: User[]) => {
+	console.log("Received game results:", users);  //ny
+	const scoreboard = document.getElementById('scoreboard');
+
+	if(!scoreboard) {
+		console.log("Couldn't find scoreboard");
+		return;
+	}
+
+	const player = users.find(user => user.id === socket.id);
+	const opponent = users.find(user => user.id !== socket.id);
+
+	if(!player || !opponent) {
+		console.log("Couldn't find player or opponent");
+		return;
+	}
+	
+	scoreboard.innerHTML = `
+	<span class="playing-user"> ${player.username} ${player.timer ?? 0} ${player.score} </span> - 
+	<span class="opponent-user"> ${opponent.score} ${opponent.timer ?? 0} ${opponent.username} </span>
+	`;
+	
 });
 
 

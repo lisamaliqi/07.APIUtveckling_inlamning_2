@@ -9,6 +9,7 @@ export interface ServerToClientEvents {
     userJoined: (data: { username: string; gameRoomId: string }) => void;
     virusPosition: (position: number) => void;
     updateScores: (users: { id: string; username: string; score: number }[]) => void; //3
+    displayGameResults: (users: { id: string; username: string; score: number; timer: number | null; gameRoomId: string;}[]) => void; // ny
 }
 
 // Events emitted by the client to the server
