@@ -18,8 +18,8 @@ const calculateVirusPosition = () => { //Calculate the random position the virus
 };
 
 const calculateRandomDelay = ()=> { //Calculate the random delay for the virus to appear on the grid, between 1500ms and 10000ms
-	// return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
-	return 1000;
+	return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
+	// return 1000;
 };
 
 
@@ -128,7 +128,7 @@ export const handleConnection = (
 				};
 
 				//If 10 rounds has been played -> END GAME
-				if (updateGameRound.gameRound > 2) {
+				if (updateGameRound.gameRound > 10) {
 					debug(`game over!! No more games for room ${gameRoomId}`);
 
 					//take out the score for the users
