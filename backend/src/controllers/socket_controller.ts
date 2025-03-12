@@ -216,13 +216,24 @@ export const handleConnection = (
 	socket.on("disconnect", async () => {
 		debug("👋 A user disconnected", socket.id);
 
-
 		const getUser = async (userId:string) => {
-			return await prisma.user.findUnique({
+
+			 const user = await prisma.user.findUnique({
 				where: {
 					id: userId
+				},
+				include:{
+					room: true
 				}
+
 			})
+
+			if(user?.room){
+				await prisma.gameRoom.delete({
+					where: { id: user.room.id }
+				})
+			}
+			return
 		}
 
 		getUser(socket.id)
@@ -231,15 +242,17 @@ export const handleConnection = (
 			debug("user dont exist")
 			return
 		}
-
 		const deleteUser = async (userId:string) => {
 			return await prisma.user.delete({
 				where: {
 					id:userId
-				}
+				},
 			})
 		}
 		deleteUser(socket.id)
+
+
+
 
 
 		});
