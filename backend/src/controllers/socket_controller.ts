@@ -65,6 +65,8 @@ export const handleConnection = (
 				},
 			});
 
+			debug('user that clicked the virus: ', user);
+
 			//Find all the users in the gameRoom so that i later can calculate if both of them have pressed the virus AND check who's the fastest
 			const usersInRoom = await prisma.user.findMany({
 				where: {
