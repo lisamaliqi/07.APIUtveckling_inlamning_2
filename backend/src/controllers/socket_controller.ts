@@ -5,6 +5,7 @@ import Debug from "debug";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
+import { get } from "node:http";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -111,7 +112,6 @@ export const handleConnection = (
 			return;
 		};
 
-
 		try {
 			//--------- CREATE OR JOIN GAME ROOM ---------//
 			//Find all game rooms
@@ -210,10 +210,39 @@ export const handleConnection = (
 	});
 
 
+
+
 	// Handle a user disconnecting
-	socket.on("disconnect", () => {
+	socket.on("disconnect", async () => {
 		debug("👋 A user disconnected", socket.id);
-	});
+
+
+		const getUser = async (userId:string) => {
+			return await prisma.user.findUnique({
+				where: {
+					id: userId
+				}
+			})
+		}
+
+		getUser(socket.id)
+
+		if(!getUser){
+			debug("user dont exist")
+			return
+		}
+
+		const deleteUser = async (userId:string) => {
+			return await prisma.user.delete({
+				where: {
+					id:userId
+				}
+			})
+		}
+		deleteUser(socket.id)
+
+
+		});
 };
 
 
