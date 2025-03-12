@@ -49,7 +49,7 @@ for (let i = 1; i <= 100; i++) {
  * FUNCTIONS
 */
 
-function placeObject(position: number) { //Place virus on grid
+const placeObject = (position: number) => { //Place virus on grid
 	const cellsEl = document.querySelectorAll(".cells");
 
 	//Remove all objects from grid (numbers and previous virus positions)
@@ -81,6 +81,47 @@ function placeObject(position: number) { //Place virus on grid
 };
 
 
+function displayFinalScores(scores: { username: string; score: number }[]) { //display the final scores 
+	//Sort all the scores from the players from the highest to lowest 
+    scores.sort((a, b) => b.score - a.score);
+	console.log('scores has been sorted!', scores);
+	
+	//Create a function that displays the score 
+	//Parameter: what type of page it is (won, lost, draw)
+	const showScoreAfterGame = (pageResult: string) => {
+		//finalScoresEl is the one INSIDE pageResult
+		const finalScoresEl = document.querySelector(`${pageResult} .final-scores`) as HTMLDivElement;
+		//empty it out so that id doesn't contain anything
+		finalScoresEl.innerHTML = '';
+		//print out the score in the finalScoreEl
+		return finalScoresEl.innerHTML = `
+			<ul>
+				<li>
+					${scores[0].username} - ${scores[0].score} ------ ${scores[1].score} - ${scores[1].username}
+				</li>
+			</ul>
+		`;
+	};
+	
+	
+    //Show if the user won, lost or if its a draw 
+    if (scores[0].score > scores[1].score && scores[0].username === username) {
+		// Player won
+        document.querySelector('#won-page')?.classList.remove('hide');
+		showScoreAfterGame('#won-page');
+    } else if (scores[0].score > scores[1].score && scores[0].username !== username) {
+        // Player lost
+        document.querySelector('#lost-page')?.classList.remove('hide');
+		showScoreAfterGame('#lost-page');
+	} else {
+        // It's a draw
+        document.querySelector('#draw-page')?.classList.remove('hide');
+		showScoreAfterGame('#draw-page');
+	};
+
+	//Hide the gamePage so its not visible 
+    gamePageEl.classList.add('hide');
+};
 
 /**
  * Socket Event Listeners
@@ -178,6 +219,15 @@ socket.on('virusPosition', (position: number) => {
 	//place the virus on the grid with the position taken from server (backend)
 	placeObject(position);
 });
+
+
+socket.on("gameEnded", ({ scores }) => {
+    console.log("Game over! Final scores:", scores);
+
+	//call function that calculates what result-page will be visible for the user (depending on if they won, lost or draw)
+    displayFinalScores(scores);
+});
+
 
 
 

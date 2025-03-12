@@ -18,7 +18,8 @@ const calculateVirusPosition = () => { //Calculate the random position the virus
 };
 
 const calculateRandomDelay = ()=> { //Calculate the random delay for the virus to appear on the grid, between 1500ms and 10000ms
-	return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
+	// return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
+	return 1000;
 };
 
 
@@ -119,6 +120,34 @@ export const handleConnection = (
 				});
 
 				debug(`Updated game round for ${gameRoomId}, new game round is ${updateGameRound.gameRound}:`);
+
+				//return if gameRound somehow is null
+				if(!updateGameRound.gameRound) {
+					debug('gameround apparently is null?');
+					return;
+				};
+
+				//If 10 rounds has been played -> END GAME
+				if (updateGameRound.gameRound > 2) {
+					debug(`game over!! No more games for room ${gameRoomId}`);
+
+					//take out the score for the users
+					const finalScoreForUsers = await prisma.user.findMany({
+						where: {
+							gameRoomId
+						},
+						select: {
+							id: true,
+							username: true,
+							score: true,
+						},
+					});
+
+					debug('final score for users: ', finalScoreForUsers);
+
+					io.to(gameRoomId).emit('gameEnded', { scores: finalScoreForUsers });
+
+				};
 
 				// Emit updated scores and start new round
 				const updatedUsersInRoom = await prisma.user.findMany({
