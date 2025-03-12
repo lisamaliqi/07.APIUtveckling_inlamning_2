@@ -4,7 +4,7 @@ export {}
 export interface User {
     id: string,
 	username: string,
-	gameRoomId : string | null,
+	gameRoomId : string,
 	score: number | null,
 	timer: number | null,
 } 

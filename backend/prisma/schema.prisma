@@ -35,7 +35,7 @@ model ScoreBoardUser {
 model User {
   id            String      @id @map("_id")
   username      String
-  gameRoomId    String?      @db.ObjectId
+  gameRoomId    String      @db.ObjectId
   score         Int         
   timer         Float?
 

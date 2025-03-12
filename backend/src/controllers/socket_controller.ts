@@ -5,6 +5,7 @@ import Debug from "debug";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
+import { get } from "node:http";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -20,6 +21,63 @@ const calculateVirusPosition = () => { //Calculate the random position the virus
 const calculateRandomDelay = ()=> { //Calculate the random delay for the virus to appear on the grid, between 1500ms and 10000ms
 	// return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
 	return 500;
+};
+
+
+const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user disconnecting or rage quitting
+	debug("👋 A user disconnected", socket.id);
+
+	//find user, if any
+	const user = await prisma.user.findUnique({
+		where: {
+			id: socket.id,
+		},
+		include: {
+			room: true,
+		},
+	});
+	debug('user that disconnected: ', user);
+
+	//if no user found, return
+	if(!user){
+		debug('No user to find');
+		return;
+	};
+
+	//Find the gameRoom that the user was in
+	const gameRoom = await prisma.gameRoom.findUnique({
+		where: {
+			id: user.gameRoomId,
+		},
+		include: {
+			users: true,
+		},
+	});
+
+	//if that gameRoom exist for the user:
+	if(gameRoom){
+		//emit to the gameRoom that the user has left to the other user in the room
+		socket.to(user.gameRoomId).emit('userLeft', user.username);
+
+		debug(`${user.username} left game room ${user.gameRoomId}`);
+
+		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
+		await prisma.gameRoom.delete({
+			where: {
+				id: user.gameRoomId,
+			},
+		});
+
+		debug('Deleted the gameRoom: ', user.gameRoomId);
+	} else {
+		//if user exists, but somehow not part of a gameRoom, delete the user
+		await prisma.user.delete({
+			where: {
+				id: socket.id,
+			},
+		});
+
+	};
 };
 
 
@@ -235,7 +293,6 @@ export const handleConnection = (
 			return;
 		};
 
-
 		try {
 			//--------- CREATE OR JOIN GAME ROOM ---------//
 			//Find all game rooms
@@ -372,9 +429,14 @@ export const handleConnection = (
 	});
 
 
+	socket.on("userAFK", () =>{
+		handleDisconnectOrRageQuit(socket);
+	});
+
+
 	// Handle a user disconnecting
-	socket.on("disconnect", () => {
-		debug("👋 A user disconnected", socket.id);
+	socket.on("disconnect", async () => {
+		handleDisconnectOrRageQuit(socket);
 	});
 };
 
