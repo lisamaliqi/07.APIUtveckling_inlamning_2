@@ -406,10 +406,8 @@ export const handleConnection = (
 
 	getUser(socket.id)
 
-	if(!getUser){
-		debug("user dont exist")
-		return
-	}
+	if(!getUser)	return
+
 
 	const deleteUser = async (userId: string) => {
 		// Hämta användaren först
