@@ -7,6 +7,7 @@ export interface ServerToClientEvents {
     allActiveGameRooms: (allActiveGameRooms: {id: string; users: User[] }[]) => void;
     usersInRoom: (amountOfUsers: number) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
+    userLeft: (username:string) => void
     virusPosition: (position: number) => void;
     updateScores: (users: { id: string; username: string; score: number }[]) => void; //3
 }

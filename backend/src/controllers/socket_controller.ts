@@ -216,6 +216,9 @@ export const handleConnection = (
 	socket.on("disconnect", async () => {
 		debug("👋 A user disconnected", socket.id);
 
+
+
+
 		const getUser = async (userId:string) => {
 
 			 const user = await prisma.user.findUnique({
@@ -227,8 +230,13 @@ export const handleConnection = (
 				}
 
 			})
+			if(!user){
+				return
+			}
 
 			if(user?.room){
+				io.to(user.room.id).emit("userLeft",user.username)
+
 				await prisma.gameRoom.delete({
 					where: { id: user.room.id }
 				})

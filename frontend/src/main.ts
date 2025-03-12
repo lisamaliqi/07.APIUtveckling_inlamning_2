@@ -168,6 +168,10 @@ socket.on("userJoined", ({ username, gameRoomId: roomId }) => {
 	socket.emit('getUsersInRoom', gameRoomId); 
 });
 
+socket.on("userLeft",(username) =>{
+	alert(username)
+})
+
 
 //Listen for when the server emits the virus position
 socket.on('virusPosition', (position: number) => {
@@ -175,6 +179,8 @@ socket.on('virusPosition', (position: number) => {
 	//place the virus on the grid with the position taken from server (backend)
 	placeObject(position);
 });
+
+
 
 
 
