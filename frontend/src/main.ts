@@ -56,7 +56,7 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-	}, 5000);
+	}, 30000);
 } ;
 
 const placeObject = (position: number) => { //Place virus on grid
