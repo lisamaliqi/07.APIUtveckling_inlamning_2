@@ -352,7 +352,7 @@ export const handleConnection = (
 		debug("All active game rooms", allActiveGameRooms);
 
 		//Send all the active game rooms to the client (frontend)
-		socket.emit('allActiveGameRooms', allActiveGameRooms);
+		io.emit('allActiveGameRooms', allActiveGameRooms);
 	});
 
 
@@ -365,7 +365,7 @@ export const handleConnection = (
 
 		debug('10 last games played: ', last10GamesPlayed);
 
-		socket.emit('last10GamesPlayed', last10GamesPlayed);
+		io.emit('last10GamesPlayed', last10GamesPlayed); //io.emit so that it sends to ALL users in the landing page
 	});
 
 

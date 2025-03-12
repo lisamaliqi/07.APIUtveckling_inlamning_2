@@ -153,11 +153,17 @@ socket.on("updateScores", (users) => {
     users.forEach((user) => { //For each user, log their username and score
         console.log(`${user.username}: ${user.score} points`);
     });
+	
+	//update realtime the score to users that are in the landing-page
+	socket.emit('getAllActiveRooms');
+	socket.emit('get10LastGamesPlayed');
+	
 });
 
 
 socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 	console.log('All active game rooms:', allActiveGameRooms);
+	activeGamesEl.innerHTML = "Active Games";
 
 	//For each room, do this:
 	allActiveGameRooms.forEach((room) => {
@@ -171,6 +177,7 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
                         <span class="score">${user.score}</span>
                     </li>`;
         }).join(`<span class="versus"> VS </span>`);
+
 
 		//Set the innerHTML of the room element to the list of users that are in the room
 		roomEl.innerHTML = `
@@ -187,6 +194,7 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 
 socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 	console.log('Last 10 games: ', last10GamesPlayed);
+	last10Games.innerHTML = "Last 10 Games";
 
 	last10GamesPlayed.forEach((game) => {
 		const gameEl = document.createElement('div');
@@ -199,6 +207,7 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 				</li>
 			`;
 		}).join(`<span class="versus" > VS </span>`);
+
 
 		gameEl.innerHTML = `
 			<ul class="users" >
@@ -221,6 +230,9 @@ socket.on('usersInRoom', (amountOfUsers: number) => {
 		gamePageEl.classList.remove('hide');
 		
 		console.log('Starting game...');
+
+		socket.emit('getAllActiveRooms');
+		socket.emit('get10LastGamesPlayed');	
 	};
 });
 
@@ -238,6 +250,9 @@ socket.on("userJoined", ({ username, gameRoomId: roomId }) => {
 	
 	//emit the getUsersInRoom event to the server (backend) to get the amount of users in the room
 	socket.emit('getUsersInRoom', gameRoomId); 
+
+	socket.emit('getAllActiveRooms');
+	socket.emit('get10LastGamesPlayed');
 });
 
 
