@@ -19,4 +19,5 @@ export interface ClientToServerEvents {
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
     virusClickedByUser: (data: { gameRoomId: string; userId: string }) => void; //4
+    userAFK: () => void
 }

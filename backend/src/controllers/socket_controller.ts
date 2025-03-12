@@ -210,18 +210,11 @@ export const handleConnection = (
 	});
 
 
-
-
-	// Handle a user disconnecting
-	socket.on("disconnect", async () => {
-		debug("👋 A user disconnected", socket.id);
-
-
-
+	socket.on("userAFK", () =>{
 
 		const getUser = async (userId:string) => {
 
-			 const user = await prisma.user.findUnique({
+			const user = await prisma.user.findUnique({
 				where: {
 					id: userId
 				},
@@ -230,34 +223,85 @@ export const handleConnection = (
 				}
 
 			})
-			if(!user){
-				return
-			}
-
-			if(user?.room){
-				io.to(user.room.id).emit("userLeft",user.username)
-
-				await prisma.gameRoom.delete({
-					where: { id: user.room.id }
-				})
-			}
+		if(!user){
 			return
 		}
 
-		getUser(socket.id)
+		if(user?.room){
+			io.to(user.room.id).emit("userLeft",user.username)
 
-		if(!getUser){
-			debug("user dont exist")
-			return
-		}
-		const deleteUser = async (userId:string) => {
-			return await prisma.user.delete({
-				where: {
-					id:userId
-				},
+			await prisma.gameRoom.delete({
+				where: { id: user.room.id }
 			})
 		}
-		deleteUser(socket.id)
+		return
+	}
+
+	getUser(socket.id)
+
+	if(!getUser){
+		debug("user dont exist")
+		return
+	}
+	const deleteUser = async (userId:string) => {
+		return await prisma.user.delete({
+			where: {
+				id:userId
+			},
+		})
+	}
+	deleteUser(socket.id)
+
+
+
+	})
+
+
+	// Handle a user disconnecting
+	socket.on("disconnect", async () => {
+		debug("👋 A user disconnected", socket.id);
+
+
+		const getUser = async (userId:string) => {
+
+			const user = await prisma.user.findUnique({
+				where: {
+					id: userId
+				},
+				include:{
+					room: true
+				}
+
+			})
+		if(!user){
+			return
+		}
+
+		if(user?.room){
+			io.to(user.room.id).emit("userLeft",user.username)
+
+			await prisma.gameRoom.delete({
+				where: { id: user.room.id }
+			})
+		}
+		return
+	}
+
+	getUser(socket.id)
+
+	if(!getUser){
+		debug("user dont exist")
+		return
+	}
+	const deleteUser = async (userId:string) => {
+		return await prisma.user.delete({
+			where: {
+				id:userId
+			},
+		})
+	}
+	deleteUser(socket.id)
+
 
 
 
