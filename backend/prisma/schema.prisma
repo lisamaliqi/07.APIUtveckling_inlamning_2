@@ -25,7 +25,7 @@ model User {
   username      String
   gameRoomId    String?      @db.ObjectId
   score         Int         
-  timer         Int?
+  timer         Float?
 
   room          GameRoom?    @relation(fields: [gameRoomId], references: [id])
 }

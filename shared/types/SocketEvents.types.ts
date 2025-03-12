@@ -10,6 +10,8 @@ export interface ServerToClientEvents {
     userLeft: (username:string) => void
     virusPosition: (position: number) => void;
     updateScores: (users: { id: string; username: string; score: number }[]) => void; //3
+    gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?
+    gameEnded: (data: { scores: { id: string; username: string; score: number }[] }) => void;
 }
 
 // Events emitted by the client to the server
@@ -18,6 +20,6 @@ export interface ClientToServerEvents {
     getAllActiveRooms: () => void;
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
-    virusClickedByUser: (data: { gameRoomId: string; userId: string }) => void; //4
     userAFK: () => void
+    virusClickedByUser: (data: { gameRoomId: string; userId: string; reactionTime: number }) => void; //4
 }
