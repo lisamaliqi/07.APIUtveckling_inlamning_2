@@ -154,6 +154,7 @@ export const handleConnection = (
 								gameRoomId,
 								users: {
 									create: finalScoreForUsers.map(user => ({
+										id: user.id,
 										username: user.username,
 										score: user.score,
 									})),
@@ -162,12 +163,19 @@ export const handleConnection = (
 						});
 
 						debug('ScoreBoard created: ', createScoreBoard );
+
+						//delete the gameRoom after adding information to scoreBoard, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
+						await prisma.gameRoom.delete({
+							where: {
+								id: gameRoomId,
+							},
+						});
+
+						debug('Deleted the gameRoom: ', gameRoomId);
+
 					} catch (err) {
-						debug('Error when adding the game to the scoreBoard', err)
+						debug('Error when adding the game to the scoreBoard or when deleting the gameRoom', err)
 					};
-
-
-
 				};
 
 				// Emit updated scores and start new round

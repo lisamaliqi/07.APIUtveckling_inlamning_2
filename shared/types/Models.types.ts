@@ -13,5 +13,5 @@ export interface ScoreBoardUser {
 	id: string,
 	username: string,
 	score: number,
-	scoreboardId: string,
+	scoreboardId: string | null,
 }
