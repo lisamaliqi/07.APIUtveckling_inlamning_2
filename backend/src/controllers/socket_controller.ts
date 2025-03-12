@@ -22,6 +22,64 @@ const calculateRandomDelay = ()=> { //Calculate the random delay for the virus t
 	return 500;
 };
 
+const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user disconnecting or rage quitting
+	debug("👋 A user disconnected", socket.id);
+
+	//find user, if any
+	const user = await prisma.user.findUnique({
+		where: {
+			id: socket.id,
+		},
+		include: {
+			room: true,
+		},
+	});
+	debug('user that disconnected: ', user);
+
+	//if no user found, return
+	if(!user){
+		debug('No user to find');
+		return;
+	};
+
+	//Find the gameRoom that the user was in
+	const gameRoom = await prisma.gameRoom.findUnique({
+		where: {
+			id: user.gameRoomId,
+		},
+		include: {
+			users: true,
+		},
+	});
+
+	//if that gameRoom exist for the user:
+	if(gameRoom){
+		//emit to the gameRoom that the user has left to the other user in the room
+		socket.to(user.gameRoomId).emit('userLeft', user.username);
+
+		debug(`${user.username} left game room ${user.gameRoomId}`);
+
+		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
+		await prisma.gameRoom.delete({
+			where: {
+				id: user.gameRoomId,
+			},
+		});
+
+		debug('Deleted the gameRoom: ', user.gameRoomId);
+	} else {
+		//if user exists, but somehow not part of a gameRoom, delete the user
+		await prisma.user.delete({
+			where: {
+				id: socket.id,
+			},
+		});
+
+	};
+};
+
+
+
 
 
 // Handle a user connecting
@@ -372,9 +430,15 @@ export const handleConnection = (
 	});
 
 
+	socket.on('userAFK', async () => {
+		handleDisconnectOrRageQuit(socket);
+	});
+
+
+
 	// Handle a user disconnecting
-	socket.on("disconnect", () => {
-		debug("👋 A user disconnected", socket.id);
+	socket.on("disconnect", async () => {
+		handleDisconnectOrRageQuit(socket);
 	});
 };
 

@@ -8,6 +8,7 @@ export interface ServerToClientEvents {
     last10GamesPlayed: (last10GamesPlayed: {id: string; gameRoomId: string; users: ScoreBoardUser[] }[]) => void;
     usersInRoom: (amountOfUsers: number) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
+    userLeft: (username:string) => void
     virusPosition: (position: number) => void;
     updateScores: (users: { id: string; username: string; score: number }[]) => void; //3
     gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?
@@ -21,5 +22,6 @@ export interface ClientToServerEvents {
     get10LastGamesPlayed: () => void;
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
+    userAFK: () => void
     virusClickedByUser: (data: { gameRoomId: string; userId: string; reactionTime: number }) => void; //4
 }

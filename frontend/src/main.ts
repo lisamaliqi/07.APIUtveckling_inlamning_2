@@ -21,6 +21,8 @@ const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
 const waitingForPlayerEl = document.querySelector('.waiting-for-player') as HTMLDivElement;
 const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
 const last10Games = document.querySelector('#last10Games') as HTMLDivElement;
+const rageQuitEl = document.querySelector("#ragequit-page") as HTMLDivElement
+
 
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
@@ -32,8 +34,10 @@ const usernameInputEl = document.querySelector("#username") as HTMLInputElement
  * VARIABLES
  */
 let username: string | null = null;
-let gameRoomId: string | null =null
+let gameRoomId: string | null =null;
 let timerStart: number; 
+
+let virusClickTimer: number;
 
 
 
@@ -50,6 +54,13 @@ for (let i = 1; i <= 100; i++) {
  * FUNCTIONS
 */
 
+const resetTimer = () => {
+	clearTimeout(virusClickTimer)
+	virusClickTimer = setTimeout(()=> {
+		socket.emit('userAFK')
+	},30000)
+} 
+
 const placeObject = (position: number) => { //Place virus on grid
 	const cellsEl = document.querySelectorAll(".cells");
 
@@ -64,11 +75,18 @@ const placeObject = (position: number) => { //Place virus on grid
 	
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
+
+	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
+	resetTimer();
+
+
 	objectEl.addEventListener('click', () => {
 		if (!gameRoomId || !socket.id) {
 			console.error('game Room doesnt exist or socket id is missing');
 			return;
 		};
+
+		resetTimer();
 
 		//calculate the reaction time
 		const reactionTime = Date.now() - timerStart;
@@ -139,6 +157,8 @@ socket.on("connect", () => {
 // Listen for when server got tired of us
 socket.on("disconnect", () => {
 	console.log("🥺 Got disconnected from server", socket.io.opts.hostname + ":" + socket.io.opts.port);
+
+	socket.emit("userAFK");
 });
 
 // Listen for when we're reconnected (either due to our or the servers connection)
@@ -254,6 +274,18 @@ socket.on("userJoined", ({ username, gameRoomId: roomId }) => {
 	socket.emit('getAllActiveRooms');
 	socket.emit('get10LastGamesPlayed');
 });
+
+
+socket.on("userLeft",(username) =>{
+
+	rageQuitEl.innerHTML = `
+		<h1>${username} has rage quit you won</h1>
+		<button class="play-again btn">Play Again</button>
+	`
+	rageQuitEl.classList.remove("hide")
+	gamePageEl.classList.add("hide")
+
+})
 
 
 //Listen for when the server emits the virus position
