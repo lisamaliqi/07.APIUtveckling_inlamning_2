@@ -348,6 +348,19 @@ export const handleConnection = (
 	});
 
 
+	socket.on('get10LastGamesPlayed', async () => {
+		const last10GamesPlayed = await prisma.scoreBoard.findMany({
+			include: {
+				users: true,
+			},
+		});
+
+		debug('10 last games played: ', last10GamesPlayed);
+
+		socket.emit('last10GamesPlayed', last10GamesPlayed);
+	});
+
+
 	// Handle a user disconnecting
 	socket.on("disconnect", () => {
 		debug("👋 A user disconnected", socket.id);

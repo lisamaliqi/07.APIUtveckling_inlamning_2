@@ -1,10 +1,11 @@
 export {}
 
-import { User } from "./Models.types";
+import { ScoreBoardUser, User } from "./Models.types";
 
 // Events emitted by the server to the client
 export interface ServerToClientEvents {
     allActiveGameRooms: (allActiveGameRooms: {id: string; users: User[] }[]) => void;
+    last10GamesPlayed: (last10GamesPlayed: {id: string; gameRoomId: string; users: ScoreBoardUser[] }[]) => void;
     usersInRoom: (amountOfUsers: number) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
     virusPosition: (position: number) => void;
@@ -17,6 +18,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
     gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?
     getAllActiveRooms: () => void;
+    get10LastGamesPlayed: () => void;
     getUsersInRoom: (gameRoomId: string) => void;
     userJoinRequest: (username: string, gameRoomId?: string) => void;
     virusClickedByUser: (data: { gameRoomId: string; userId: string; reactionTime: number }) => void; //4

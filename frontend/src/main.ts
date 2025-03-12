@@ -20,6 +20,7 @@ const loginWrapperEl = document.querySelector('#login-wrapper') as HTMLDivElemen
 const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
 const waitingForPlayerEl = document.querySelector('.waiting-for-player') as HTMLDivElement;
 const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
+const last10Games = document.querySelector('#last10Games') as HTMLDivElement;
 
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
@@ -132,6 +133,7 @@ socket.on("connect", () => {
 	console.log("💥 Connected to server", socket.io.opts.hostname + ":" + socket.io.opts.port);
 	console.log("🔗 Socket ID:", socket.id);
 	socket.emit('getAllActiveRooms');
+	socket.emit('get10LastGamesPlayed');
 });
 
 // Listen for when server got tired of us
@@ -160,7 +162,7 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 	//For each room, do this:
 	allActiveGameRooms.forEach((room) => {
 		//create a new game room list element
-		const roomEl = document.createElement('li');
+		const roomEl = document.createElement('div');
 
 		//Create a list of users in the room that shows username and score
 		const usersList = room.users.map((user) => {
@@ -179,6 +181,32 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 
 		//Append the game room element to the active games section
         activeGamesEl.appendChild(roomEl);
+	});
+});
+
+
+socket.on('last10GamesPlayed', (last10GamesPlayed) => {
+	console.log('Last 10 games: ', last10GamesPlayed);
+
+	last10GamesPlayed.forEach((game) => {
+		const gameEl = document.createElement('div');
+
+		const usersList = game.users.map((user) => {
+			return `
+				<li class="user">
+					<span class="username" >${user.username}</span> -
+					<span class="score" >${user.score}</span>
+				</li>
+			`;
+		}).join(`<span class="versus" > VS </span>`);
+
+		gameEl.innerHTML = `
+			<ul class="users" >
+				${usersList}
+			</ul>
+		`;
+
+		last10Games.appendChild(gameEl);
 	});
 });
 

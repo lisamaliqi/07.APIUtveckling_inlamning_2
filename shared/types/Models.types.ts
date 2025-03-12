@@ -8,3 +8,10 @@ export interface User {
 	score: number | null,
 	timer: number | null,
 } 
+
+export interface ScoreBoardUser {
+	id: string,
+	username: string,
+	score: number,
+	scoreboardId: string,
+}
