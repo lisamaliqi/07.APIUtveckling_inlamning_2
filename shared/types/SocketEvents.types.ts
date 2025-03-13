@@ -6,7 +6,7 @@ import { ScoreBoardUser, User } from "./Models.types";
 export interface ServerToClientEvents {
     allActiveGameRooms: (allActiveGameRooms: {id: string; users: User[] }[]) => void;
     last10GamesPlayed: (last10GamesPlayed: {id: string; gameRoomId: string; users: ScoreBoardUser[] }[]) => void;
-    usersInRoom: (amountOfUsers: number) => void;
+    usersInRoom: (amountOfUsers: number, usernames: string[]) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
     userLeft: (username: string) => void;
     virusPosition: (position: number) => void;

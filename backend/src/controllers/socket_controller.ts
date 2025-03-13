@@ -356,7 +356,7 @@ export const handleConnection = (
 
 			if(usersInRoom.length === 2) {
 				debug('starting game in gameroom: ', gameRoomId);
-				io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
+				// io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
 
 				// Start new round
 				const virusPosition = calculateVirusPosition();
@@ -394,8 +394,11 @@ export const handleConnection = (
 			return;
 		};
 
+		//Create array of the usernames in the gameRoom so that i can display it in the frontEnd
+		const usernames = gameRoom.users.map(user => user.username);
+
 		//Emit to the client (frontend) the amount of users in the game room
-		socket.emit("usersInRoom", gameRoom.users.length);
+		socket.emit("usersInRoom", gameRoom.users.length, usernames);
 	});
 
 
@@ -408,7 +411,7 @@ export const handleConnection = (
 			},
 		});
 
-		debug("All active game rooms", allActiveGameRooms);
+		// debug("All active game rooms", allActiveGameRooms);
 
 		//Send all the active game rooms to the client (frontend)
 		io.emit('allActiveGameRooms', allActiveGameRooms);
@@ -423,7 +426,7 @@ export const handleConnection = (
 			take: -10,
 		});
 
-		debug('10 last games played: ', last10GamesPlayed);
+		// debug('10 last games played: ', last10GamesPlayed);
 
 		io.emit('last10GamesPlayed', last10GamesPlayed); //io.emit so that it sends to ALL users in the landing page
 	});

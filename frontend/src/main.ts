@@ -202,7 +202,7 @@ socket.on("updateScores", (users) => {
 
 
 socket.on('allActiveGameRooms', (allActiveGameRooms) => {
-	console.log('All active game rooms:', allActiveGameRooms);
+	// console.log('All active game rooms:', allActiveGameRooms);
 	activeGamesEl.innerHTML = "Active Games";
 
 	//For each room, do this:
@@ -233,7 +233,7 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 
 
 socket.on('last10GamesPlayed', (last10GamesPlayed) => {
-	console.log('Last 10 games: ', last10GamesPlayed);
+	// console.log('Last 10 games: ', last10GamesPlayed);
 	last10Games.innerHTML = "Last 10 Games";
 
 	last10GamesPlayed.forEach((game) => {
@@ -261,8 +261,9 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 
 
 //Listen for when the server emits the usersInRoom event
-socket.on('usersInRoom', (amountOfUsers: number) => {
-	console.log('Users in room:', amountOfUsers);
+socket.on('usersInRoom', (amountOfUsers: number, usernames: string[]) => {
+	console.log('Amount of users in room:', amountOfUsers);
+	console.log('Usernames in room:', usernames);
 	
 	//if there are 2 users in the room, hide waiting for player and show the game page
 	if (amountOfUsers === 2) {
@@ -270,6 +271,10 @@ socket.on('usersInRoom', (amountOfUsers: number) => {
 		gamePageEl.classList.remove('hide');
 		
 		console.log('Starting game...');
+
+		// Assign usernames to HTML elements
+        document.querySelector('#player1')!.textContent = `${usernames[0]}`;
+        document.querySelector('#player2')!.textContent = `${usernames[1]}`;
 
 		socket.emit('getAllActiveRooms');
 		socket.emit('get10LastGamesPlayed');	
