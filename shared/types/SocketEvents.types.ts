@@ -9,6 +9,9 @@ export interface ServerToClientEvents {
     usersInRoom: (amountOfUsers: number, usernames: string[]) => void;
     userJoined: (data: { username: string; gameRoomId: string }) => void;
     userLeft: (username: string) => void;
+    playAgain: (username: string) => void;
+    // playAgain: (data: { scores: { username: string}[]}) => void;
+
     virusPosition: (position: number) => void;
     updateScores: (data: { scores: { id: string; username: string; score: number; timer: string }[]}) => void; //3
     gameRound: (gameRoomId: string) => void; //round: number inside gameRound parameter?

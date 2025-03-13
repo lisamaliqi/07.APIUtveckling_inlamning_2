@@ -6,6 +6,7 @@ import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
 import { get } from "node:http";
+import { Prisma } from "@prisma/client";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -56,12 +57,57 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 		},
 	});
 
+	if(!gameRoom){
+		debug('No gameRoom to find');
+		return;
+	};
+
+
+	//emit to the gameRoom that the user has left to the other user in the room
+	socket.to(user.gameRoomId).emit('userLeft', user.username);
+
+	//Find the user who is still in the room
+	const remainingUser = gameRoom.users.find(u => u.id !== user.id);
+
+	if (remainingUser) {
+		// Emit 'playAgain' to the user still in the room with their username
+		socket.to(user.gameRoomId).emit('playAgain', remainingUser.username);
+	};
+
+	debug(`${user.username} left game room ${user.gameRoomId}`);
+
+
+
+	try {
+		//try again to see if the room still exists before trying to delete
+        const existingRoom = await prisma.gameRoom.findUnique({
+            where: { id: user.gameRoomId },
+        });
+
+		//if room exists, do this:
+		if (existingRoom) {
+            await prisma.gameRoom.delete({
+                where: {
+					id: user.gameRoomId
+				},
+            });
+            debug(`Deleted the gameRoom: ${user.gameRoomId}`);
+        };
+
+	} catch (err) {
+		if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+            debug(`GameRoom ${user.gameRoomId} was already deleted`);
+		} else {
+            debug('Error deleting game room:', err);
+        }
+	};
+
+
+/*
 	//if that gameRoom exist for the user:
 	if(gameRoom){
-		//emit to the gameRoom that the user has left to the other user in the room
-		socket.to(user.gameRoomId).emit('userLeft', user.username);
 
-		debug(`${user.username} left game room ${user.gameRoomId}`);
+
 
 		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
 		await prisma.gameRoom.delete({
@@ -79,7 +125,7 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 			},
 		});
 
-	};
+	}; */
 };
 
 
@@ -90,25 +136,6 @@ export const handleConnection = (
 	io: Server<ClientToServerEvents, ServerToClientEvents>
 ) => {
 	debug("🙋 A user connected", socket.id);
-
-
-	//Listen for the gameRound event from the client (frontend)
-	/* socket.on('gameRound', (gameRoomId) => {
-		debug("🎮 Game round started");
-
-		//make the position of the virus random with calculateVirusPosition function
-		const virusPosition = calculateVirusPosition();
-
-		const delay = calculateRandomDelay();
-
-		setTimeout(() => {
-			//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
-			io.to(gameRoomId).emit('virusPosition', virusPosition);
-
-		}, delay);
-
-	}); */
-
 
 
 	socket.on("virusClickedByUser", async ({ gameRoomId, userId, reactionTime }) => {
@@ -126,6 +153,11 @@ export const handleConnection = (
 			});
 
 			debug('user that clicked the virus: ', user);
+
+			//this helps for the play again button, honestly dont know how it works but it does
+			const { username } = user;
+			debug('PLEASE WORK: ', username);
+			socket.emit('playAgain', username);
 
 			//Find all the users in the gameRoom so that i later can calculate if both of them have pressed the virus AND check who's the fastest
 			const usersInRoom = await prisma.user.findMany({
@@ -190,7 +222,7 @@ export const handleConnection = (
 				};
 
 				//If 10 rounds has been played -> END GAME
-				if (updateGameRound.gameRound > 6) {
+				if (updateGameRound.gameRound > 2) {
 					debug(`game over!! No more games for room ${gameRoomId}`);
 
 					//take out the score for the users
@@ -208,6 +240,11 @@ export const handleConnection = (
 					debug('final score for users: ', finalScoreForUsers);
 
 					io.to(gameRoomId).emit('gameEnded', { scores: finalScoreForUsers });
+
+					//Emit 'playAgain' to each user in the gameRoom with their specific username
+					finalScoreForUsers.forEach(user => {
+						io.to(user.id).emit('playAgain', user.username); // Emit only to the socket corresponding to this user
+					});
 
 					try {
 						//take the information from the gameRoom and add that information to the scoreBoard database
@@ -227,13 +264,14 @@ export const handleConnection = (
 						debug('ScoreBoard created: ', createScoreBoard );
 
 						//delete the gameRoom after adding information to scoreBoard, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
-						await prisma.gameRoom.delete({
+						 await prisma.gameRoom.delete({
 							where: {
 								id: gameRoomId,
 							},
 						});
 
-						debug('Deleted the gameRoom: ', gameRoomId);
+						// debug('Deleted the gameRoom: ', gameRoomId);
+						return;
 
 					} catch (err) {
 						debug('Error when adding the game to the scoreBoard or when deleting the gameRoom', err)
@@ -266,9 +304,6 @@ export const handleConnection = (
 				const virusPosition = calculateVirusPosition();
 				const delay = calculateRandomDelay();
 				debug('the delay is:', delay);
-
-
-				// Emit gameRoundDisplay with scores and timers before starting the next round
 
 
 				setTimeout(() => {
