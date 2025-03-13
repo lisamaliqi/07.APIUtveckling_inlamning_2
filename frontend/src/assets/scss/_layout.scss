@@ -21,6 +21,7 @@ body {
 #app,
 
 
+
 #login-wrapper {
     display: flex;
     align-items: center;
@@ -39,21 +40,14 @@ body {
     }
 
     #activeGames {
-<<<<<<< HEAD
         margin-top: 5%;
-        background-color: pink ;
+        background-color: #24b1ea ;
         width: 30%;
         height: 100vh;
         border-radius: 10px;
         transform: scale(0.8);
         overflow-y: auto;
    
-=======
-    margin-top: 10% ;
-    background-color: lightgray;
-    width: 25%;
-    height: 500px;
->>>>>>> feature/display_gameResult
 
          .users {
             display: flex;
@@ -64,9 +58,8 @@ body {
             font-size: large;
             margin: 5;
             padding: 0;
-            
-         }
-    
+        }
+        
         li {
             list-style-type: none;
         }
@@ -78,33 +71,54 @@ body {
         @media (max-width: 600px) {
             width: 60%;
         }
+
+        @media (min-width: 2000px) {
+            height: 60vh;
+        }
     }
 
    
     #last10Games {
-<<<<<<< HEAD
     margin-top: 5%;
-    background-color: plum ;
+    background-color: #fcb32b ;
     width: 30%;
     height: 100vh;
     border-radius: 10px;
     transform: scale(0.8);
+    overflow: hidden;
+    overflow-y: auto;
+    
     
         .usernameAndScore{
 
             padding: 0;
         }
+
+        .users {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: cursive;
+            font-size: large;
+            margin: 5;
+            padding: 0;
+            list-style: none;
+            font-size: clamp(14px, 2vw, 22px)
+         }
+
+         .versus {
+            margin: 0 10px; /* Adjust the margin as needed */
+        }
      
-=======
-    margin-top: 100px;
-    background-color: lightgray ;
-    width: 25%;
-    height: 500px; 
->>>>>>> feature/display_gameResult
 
     @media (max-width: 600px) {
         width: 60%;
+        height: auto;
         
+    }
+    @media (min-width: 2000px) {
+        height: 60vh;
     }
     }
 }

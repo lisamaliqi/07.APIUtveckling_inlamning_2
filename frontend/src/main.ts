@@ -58,10 +58,6 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-<<<<<<< HEAD
-	}, 30000000);
-} ;
-=======
 	}, 3000000000000);
 };
 
@@ -79,7 +75,6 @@ const displayCounter = () => {
         }
     }, 100); // Run every 100ms to make it smooth
 };
->>>>>>> feature/display_gameResult
 
 const placeObject = (position: number) => { //Place virus on grid
 	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
@@ -319,7 +314,7 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 					<span class="score" >${user.score}</span>
 				</li>
 			`;
-		}).join(`<span class="versus" > VS </span> <hr>`);
+		}).join(`<span class="versus" > VS </span> `);
 
 
 		gameEl.innerHTML = `
