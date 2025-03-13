@@ -59,7 +59,7 @@ const resetTimer = () => { //checks timer for ragequit
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-	}, 3000000000000);
+	}, 30000);
 };
 
 const displayCounter = () => { //display the counter
