@@ -56,7 +56,7 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-	}, 30000);
+	}, 30000000);
 } ;
 
 const placeObject = (position: number) => { //Place virus on grid
@@ -216,14 +216,16 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
                         <span class="username">${user.username}</span> - 
                         <span class="score">${user.score}</span>
                     </li>`;
-        }).join(`<span class="versus"> VS </span>`);
+        }).join(`<span class="versus"> VS </span> <hr>`);
 
 
 		//Set the innerHTML of the room element to the list of users that are in the room
 		roomEl.innerHTML = `
+		<hr>
             <ul class="users">
                 ${usersList}
             </ul>
+		
         `;
 
 		//Append the game room element to the active games section
@@ -238,6 +240,7 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 
 	last10GamesPlayed.forEach((game) => {
 		const gameEl = document.createElement('div');
+		gameEl.classList.add(".usernameAndScore")
 
 		const usersList = game.users.map((user) => {
 			return `
@@ -246,10 +249,11 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 					<span class="score" >${user.score}</span>
 				</li>
 			`;
-		}).join(`<span class="versus" > VS </span>`);
+		}).join(`<span class="versus" > VS </span> <hr>`);
 
 
 		gameEl.innerHTML = `
+		<hr>
 			<ul class="users" >
 				${usersList}
 			</ul>
