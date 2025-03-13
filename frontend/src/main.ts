@@ -35,6 +35,7 @@ const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
 let username: string | null = null;
 let gameRoomId: string | null =null;
 let timerStart: number; 
+let timerInterval: number;
 let virusClickTimer: number;
 
 
@@ -57,9 +58,31 @@ const resetTimer = () => {
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
 	}, 3000000000000);
-} ;
+};
+
+const displayCounter = () => {
+	const counterEl = document.querySelector('.counter') as HTMLDivElement;
+
+	clearTimeout(timerInterval);
+
+	// Update the counter every 100 milliseconds (0.1 second)
+    timerInterval = setInterval(() => {
+        const elapsedTime = (Date.now() - timerStart) / 1000; // Calculate elapsed time in seconds
+        const formattedTime = elapsedTime.toFixed(2); // Format to 2 decimals
+        if (counterEl) {
+            counterEl.textContent = formattedTime; // Update the counter element with the time
+        }
+    }, 100); // Run every 100ms to make it smooth
+};
 
 const placeObject = (position: number) => { //Place virus on grid
+	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
+	resetTimer();
+
+	displayCounter();
+
+
+
 	const cellsEl = document.querySelectorAll(".cells");
 
 	//Remove all objects from grid (numbers and previous virus positions)
@@ -74,8 +97,6 @@ const placeObject = (position: number) => { //Place virus on grid
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
 
-	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
-	resetTimer();
 
 	objectEl.addEventListener('click', () => {
 		if (!gameRoomId || !socket.id) {
