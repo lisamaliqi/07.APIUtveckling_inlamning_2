@@ -423,7 +423,6 @@ export const handleConnection = (
 	});
 
 
-
 	socket.on('getAllActiveRooms', async () => {
 		//Get all the gameRooms that are in the database, inlduding the users in the room
 		const allActiveGameRooms = await prisma.gameRoom.findMany({

@@ -23,6 +23,7 @@ const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
 const last10Games = document.querySelector('#last10Games') as HTMLDivElement;
 const rageQuitEl = document.querySelector("#ragequit-page") as HTMLDivElement;
 
+
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement;
 const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
@@ -92,7 +93,7 @@ const placeObject = (position: number) => { //Place virus on grid
 	cellsEl.forEach(cell => cell.innerHTML = "");
 
 	//Place the virus at the random index, index is taken from "virusPosition" socket event
-	cellsEl[position].innerHTML = "<span class='object'>🦠</span>";
+	cellsEl[position].innerHTML = "<span class='object'><img src='/src/assets/img/ledsen-mans2.0.png' width='100px' alt='sad måns'></span>";
 
 	//start timer
 	timerStart = Date.now();
@@ -257,14 +258,16 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
                         <span class="username">${user.username}</span> - 
                         <span class="score">${user.score}</span>
                     </li>`;
-        }).join(`<span class="versus"> VS </span>`);
+        }).join(`<span class="versus"> VS </span> <hr>`);
 
 
 		//Set the innerHTML of the room element to the list of users that are in the room
 		roomEl.innerHTML = `
+		<hr>
             <ul class="users">
                 ${usersList}
             </ul>
+		
         `;
 
 		//Append the game room element to the active games section
@@ -279,6 +282,7 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 
 	last10GamesPlayed.forEach((game) => {
 		const gameEl = document.createElement('div');
+		gameEl.classList.add(".usernameAndScore")
 
 		const usersList = game.users.map((user) => {
 			return `
@@ -287,10 +291,11 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 					<span class="score" >${user.score}</span>
 				</li>
 			`;
-		}).join(`<span class="versus" > VS </span>`);
+		}).join(`<span class="versus" > VS </span> `);
 
 
 		gameEl.innerHTML = `
+		<hr>
 			<ul class="users" >
 				${usersList}
 			</ul>

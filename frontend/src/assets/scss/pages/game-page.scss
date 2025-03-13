@@ -12,41 +12,92 @@ body {
     
 }
 
-
-
-
-
-
 #scoreboard{
-    background-color: green($color: #000000);
+    background-color: white;
     border: 2px solid black;
-    width: 80%; 
-    height: 40%;
+    justify-content: center;
+    align-items: center;
+    width: 80vw; 
+    height: 15vh;
     max-width: 1500px;
     margin: 5px;
-    font-size: 30px;
+    text-align: center;
 
+    #timer {
+        font-size: 30px;
+
+        @media (max-width: 800px) {
+            font-size: 25px;   
+        }
+    }
+
+    #player1 {
+        color: #24b1ea;
+        font-size: 40px;
+
+        @media (max-width: 750px) {
+            font-size: 25px;
+            
+        }
+    }
+    #player2 {
+        color: #ee5c9e;
+        font-size: 40px;
+
+        @media (max-width: 750px) {
+            font-size: 25px;
+            
+        }
+    }
+    #timer1, #timer2 {
+       font-size: 30px;
+
+       @media (max-width: 800px) {
+        font-size: 25px;   
+    }
+    }
+
+    #score{
+        font-size: 60px;
+        margin-bottom: 15px;
+
+        @media (max-width: 800px) {
+            font-size: 50px;
+            
+        }
+        @media (max-width: 600px) {
+            font-size: 20px;
+            
+        }
+
+    }
 }
 
 #score{
     font-size: 60px;
 }
 
+.module-border-wrap {
+    background: linear-gradient(to right, #fcb32b, #ff7230, #ee5c9e, #ac6dcd, #24b1ea,);
+    padding: 3px;
+}
+
+
 #grid-container {
     display: grid;
     grid-template-columns: repeat(10, 1fr); /* Max 10 columns */
     grid-template-rows: repeat(10, 1fr);    /* Max 10 rows */
     background-color: #ddd;
-    border: 2px solid black;
+    //border: 2px solid black;
     width: 80vw; /* Adjust width as needed */
     height: 70vh; /* Adjust height as needed to maintain square grid items */
     max-width: 1500px;
     //height: 80%;
     margin-left: 5px;
+    cursor: url('src/assets/img/bastu-3.png'), auto;
 
     .cells {
-        background-color: lightblue;
-        border: 1px solid black;
+        background-color: white;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -57,8 +108,7 @@ body {
             font-size: 2em; /* Adjust size as needed */
             display: flex;
             justify-content: center;
-            align-items: center;
-            cursor: pointer;
+            align-items: center;   
         }
     }
 }

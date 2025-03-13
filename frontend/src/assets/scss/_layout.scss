@@ -1,5 +1,15 @@
+/*
+@font-face {
+    font-family: ;
+    src: url();
+}
+*/
 body {
-    background-color: $bg-color;
+    //font-family: ;
+    background-image: url("src/assets/img/mellobackround.png");
+    background-size: 100%, 100%; ;
+
+    // cursor: url('src/img/cursor.png'), auto; // basturis i .object i game-page.scss
 }
 
 .hide {
@@ -7,27 +17,47 @@ body {
 }
 
 #app,
-#login-wrapper,
+
+
 
 #login-wrapper {
     display: flex;
     align-items: center;
 
-    #login-forms {
+    @media (max-width: 600px) {
+        flex-direction: column;
+    }
+
+    #login-form {
         margin: 0 auto;
         text-align: center;
+
+        @media (max-width: 600px) {
+            justify-content:flex-start; //?
+        }
     }
 
     #activeGames {
-    margin-top: 100px ;
-    background-color: lightgray;
-    width: 300px;
-    height: 500px;
+        margin-top: 5%;
+        background-color: #24b1ea ;
+        width: 30%;
+        height: 100vh;
+        border-radius: 10px;
+        transform: scale(0.8);
+        overflow-y: auto;
+   
 
          .users {
             display: flex;
-         }
-    
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: cursive;
+            font-size: large;
+            margin: 5;
+            padding: 0;
+        }
+        
         li {
             list-style-type: none;
         }
@@ -35,16 +65,100 @@ body {
         .versus {
             margin: 0 10px; /* Adjust the margin as needed */
         }
+
+        @media (max-width: 600px) {
+            width: 60%;
+        }
+
+        @media (min-width: 2000px) {
+            height: 60vh;
+        }
     }
 
+   
     #last10Games {
-    margin-top: 100px;
-    background-color: lightgray ;
-    width: 300px;
-    height: 500px; 
+    margin-top: 5%;
+    background-color: #fcb32b ;
+    width: 30%;
+    height: 100vh;
+    border-radius: 10px;
+    transform: scale(0.8);
+    overflow: hidden;
+    overflow-y: auto;
+    
+    
+        .usernameAndScore{
+
+            padding: 0;
+        }
 
         .users {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: cursive;
+            font-size: large;
+            margin: 5;
+            padding: 0;
+            list-style: none;
+            font-size: clamp(14px, 2vw, 22px)
+         }
+
+         .versus {
+            margin: 0 10px; /* Adjust the margin as needed */
+        }
+     
+
+    @media (max-width: 600px) {
+        width: 60%;
+        height: auto;
+        
+    }
+    @media (min-width: 2000px) {
+        height: 60vh;
+    }
+    }
+}
+.waiting-for-player {
+    height: fit-content;
+    width: fit-content;
+    margin: 0 auto;
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    background-color: black;
+    border: 2px solid white;
+    height: 400px;
+    width: 400px;
+
+    #mello-logo {
+       animation: rotation 4s infinite linear;
+    }
+    @keyframes rotation {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(359deg);
+        }
+    }
+
+    #waiting-text{
+        margin-top: 20px;
+        font-size: 20px;
+        color: white;
+        .users {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: cursive;
+            font-size: large;
+            margin: 5;
+            padding: 0;
         }
 
         li {
@@ -58,14 +172,27 @@ body {
 }
 
 
+.game-page {
+height: fit-content;
+width: fit-content;
+margin: 0 auto;
+}
 
 
 #won-page {
     background-color: lightgreen;
+    .kaj-picture{
+        width: 50vh;
+    
+    }
 }
+
 
 #lost-page {
     background-color: lightcoral;
+    .mans-picture {
+        height: 40vh;
+    }
 }
 
 #draw-page {
@@ -74,6 +201,7 @@ body {
 
 
 .result-page {
+    background: linear-gradient(to right, #fcb32b, #ff7230, #ee5c9e, #ac6dcd, #24b1ea,);
     display: flex;
     flex-direction: column;
     justify-content: center; /* Center vertically */
