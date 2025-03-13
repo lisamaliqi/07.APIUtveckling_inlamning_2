@@ -33,11 +33,13 @@ const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
 /**
  * VARIABLES
  */
-let username: string | null = null;
+// let username: string | null = null;
 let gameRoomId: string | null =null;
 let timerStart: number; 
 let timerInterval: number;
 let virusClickTimer: number;
+let username: string = '';
+
 
 
 
@@ -54,25 +56,27 @@ for (let i = 1; i <= 100; i++) {
  * FUNCTIONS
 */
 
-const resetTimer = () => {
+const resetTimer = () => { //checks timer for ragequit
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
 	}, 3000000000000);
 };
 
-const displayCounter = () => {
+const displayCounter = () => { //display the counter
+	//Get the counter element
 	const counterEl = document.querySelector('.counter') as HTMLDivElement;
 
+	//Clear the interval if it already exists
 	clearTimeout(timerInterval);
 
 	// Update the counter every 100 milliseconds (0.1 second)
     timerInterval = setInterval(() => {
-        const elapsedTime = (Date.now() - timerStart) / 1000; // Calculate elapsed time in seconds
-        const formattedTime = elapsedTime.toFixed(2); // Format to 2 decimals
+        const elapsedTime = (Date.now() - timerStart) / 1000; //Calculate time in seconds
+        const formattedTime = elapsedTime.toFixed(2); //Format to 2 decimals
         if (counterEl) {
             counterEl.textContent = formattedTime; // Update the counter element with the time
-        }
+        };
     }, 100); // Run every 100ms to make it smooth
 };
 
@@ -80,9 +84,8 @@ const placeObject = (position: number) => { //Place virus on grid
 	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
 	resetTimer();
 
+	//reset displayCounter to display the time from when the virus is placed
 	displayCounter();
-
-
 
 	const cellsEl = document.querySelectorAll(".cells");
 
@@ -99,6 +102,7 @@ const placeObject = (position: number) => { //Place virus on grid
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
 
 
+	//When the virus is clicked, do this:
 	objectEl.addEventListener('click', () => {
 		if (!gameRoomId || !socket.id) {
 			console.error('game Room doesnt exist or socket id is missing');
@@ -148,35 +152,37 @@ function displayFinalScores(scores: { username: string; score: number }[]) { //d
         const wonPageEl = document.querySelector('#won-page');
 		if(wonPageEl) {
 			wonPageEl.classList.remove('hide');
-			wonPageEl.innerHTML = `
+			wonPageEl.innerHTML += `
 				 <h1>YOU WON!</h1>
 				 <div class="final-scores"></div> 
 				 <button class="play-again btn">Play Again</button>
-			`;
+				 `;
 		};
 		showScoreAfterGame('#won-page');
+
     } else if (scores[0].score > scores[1].score && scores[0].username !== username) {
         // Player lost
         const lostPageEl = document.querySelector('#lost-page');
 		if(lostPageEl) {
 			lostPageEl.classList.remove('hide');
-			lostPageEl.innerHTML = `
+			lostPageEl.innerHTML += `
 				 <h1>YOU LOST!</h1>
 				 <div class="final-scores"></div> 
 				 <button class="play-again btn">Play Again</button>
-			`;
+				 `;
 		};
 		showScoreAfterGame('#lost-page');
+
 	} else {
         // It's a draw
         const drawPageEl = document.querySelector('#draw-page');
 		if(drawPageEl) {
 			drawPageEl.classList.remove('hide');
-			drawPageEl.innerHTML = `
+			drawPageEl.innerHTML += `
 				 <h1>ITS A DRAW!</h1>
 				 <div class="final-scores"></div> 
 				 <button class="play-again btn">Play Again</button>
-			`;
+				 `;
 		};
 		showScoreAfterGame('#draw-page');
 	};
@@ -185,8 +191,13 @@ function displayFinalScores(scores: { username: string; score: number }[]) { //d
     gamePageEl.classList.add('hide');
 };
 
+
+
+
+
+
 /**
- * Socket Event Listeners
+ * SOCKET EVENT LISTENERS
 */
 
 // Listen for when connection is established
@@ -212,22 +223,18 @@ socket.io.on("reconnect", () => {
 //Listen for when the server emits the updateScores event
 socket.on("updateScores", (data) => {
     console.log("Updated scores:", data.scores);
-   /*  scores.forEach((user) => { //For each user, log their username and score
-        console.log(`${user.username}: ${user.score} points`);
-		console.log(`${user.username}: ${user.timer} time`);
-    }); */
 
+	//add players score on the game page
 	const scoreDisplayEl = document.querySelector('#score') as HTMLDivElement;
 	scoreDisplayEl.innerHTML = `${data.scores[0].score} - ${data.scores[1].score}`;
 
+	//add players previous timer score on the game page
 	const timer1 = data.scores[0].timer;
     const timer2 = data.scores[1].timer;
 
 	document.querySelector('#timer1')!.textContent = timer1;
 	document.querySelector('#timer2')!.textContent = timer2;
 
-
-	// const userTimer = users[0].timer
 	
 	//update realtime the score to users that are in the landing-page
 	socket.emit('getAllActiveRooms');
@@ -311,7 +318,7 @@ socket.on('usersInRoom', (amountOfUsers: number, usernames: string[]) => {
 		
 		console.log('Starting game...');
 
-		// Assign usernames to HTML elements
+		//add players names on the game page
         document.querySelector('#player1')!.textContent = `${usernames[0]}`;
         document.querySelector('#player2')!.textContent = `${usernames[1]}`;
 
@@ -342,14 +349,63 @@ socket.on("userJoined", ({ username, gameRoomId: roomId }) => {
 
 socket.on("userLeft",(username) =>{
 
-	rageQuitEl.innerHTML = `
-		<h1>${username} has rage quit, you won</h1>
-		<button class="play-again btn">Play Again</button>
+	console.log('rage!!!!!');
+
+	rageQuitEl.innerHTML += `
+	<h1>${username} has rage quit, you won</h1>
+	<button class="play-again btn">Play Again</button>
 	`;
 	rageQuitEl.classList.remove("hide");
 	gamePageEl.classList.add("hide");
-
+	
 });
+
+socket.on('afk', (username) => {
+	rageQuitEl.innerHTML = `
+		<h1>${username}</h1>
+	`;
+	rageQuitEl.classList.remove("hide");
+	gamePageEl.classList.add("hide");
+});
+
+socket.on('playAgain', (retrievedUsername) => {
+	console.log('the users username, PLZ WOOOOORK ', retrievedUsername);
+
+	username = retrievedUsername;
+	console.log('HELLOOOOO username is: ', username);
+
+	//get all the play again buttons
+	const playAgainEl = Array.from(document.querySelectorAll('.play-again')) as HTMLButtonElement[];
+
+	//if button is null, return
+	if(!playAgainEl) {
+		console.log('playAgainEl is null');
+		return;
+	};
+
+	//if button is not null, do this:
+	if(playAgainEl) {
+		console.log('playAgainEl is not null');
+
+		//for each button, add an event listener that listens for a click
+		playAgainEl.forEach((button) => {
+			button.addEventListener('click', () => { //when the button is clicked, do this:
+				console.log('your username after pressing button is: ', username);
+
+				//hide all result-pages/raqequit-page
+				(document.querySelector(`#won-page`) as HTMLDivElement).classList.add('hide');
+				(document.querySelector(`#lost-page`) as HTMLDivElement).classList.add('hide');
+				(document.querySelector(`#draw-page`) as HTMLDivElement).classList.add('hide');
+				(document.querySelector(`#ragequit-page`) as HTMLDivElement).classList.add('hide');
+				
+				//emit the userJoinRequest event to the server (backend) with the username they had before
+				socket.emit('userJoinRequest', username);
+			});
+		});
+	};
+});
+
+
 
 
 //Listen for when the server emits the virus position
@@ -357,7 +413,6 @@ socket.on('virusPosition', (position: number) => {
 	console.log('Virus spawned at position:', position);
 	//place the virus on the grid with the position taken from server (backend)
 	placeObject(position);
-    
 });
 
 
@@ -367,6 +422,10 @@ socket.on("gameEnded", ({ scores }) => {
 	//call function that calculates what result-page will be visible for the user (depending on if they won, lost or draw)
     displayFinalScores(scores);
 });
+
+
+
+
 
 
 /**
