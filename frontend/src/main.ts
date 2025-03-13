@@ -193,6 +193,9 @@ socket.on("updateScores", (users) => {
     users.forEach((user) => { //For each user, log their username and score
         console.log(`${user.username}: ${user.score} points`);
     });
+
+	const scoreDisplayEl = document.querySelector('#score') as HTMLDivElement;
+	scoreDisplayEl.innerHTML = `${users[0].score} - ${users[1].score}`;
 	
 	//update realtime the score to users that are in the landing-page
 	socket.emit('getAllActiveRooms');
@@ -311,6 +314,10 @@ socket.on("userLeft",(username) =>{
 	gamePageEl.classList.add("hide");
 
 });
+
+
+
+
 
 
 //Listen for when the server emits the virus position

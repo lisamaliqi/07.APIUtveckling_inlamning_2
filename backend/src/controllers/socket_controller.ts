@@ -91,7 +91,7 @@ export const handleConnection = (
 
 
 	//Listen for the gameRound event from the client (frontend)
-	socket.on('gameRound', (gameRoomId) => {
+	/* socket.on('gameRound', (gameRoomId) => {
 		debug("🎮 Game round started");
 
 		//make the position of the virus random with calculateVirusPosition function
@@ -105,7 +105,7 @@ export const handleConnection = (
 
 		}, delay);
 
-	});
+	}); */
 
 
 
@@ -188,7 +188,7 @@ export const handleConnection = (
 				};
 
 				//If 10 rounds has been played -> END GAME
-				if (updateGameRound.gameRound > 2) {
+				if (updateGameRound.gameRound > 6) {
 					debug(`game over!! No more games for room ${gameRoomId}`);
 
 					//take out the score for the users
@@ -253,10 +253,15 @@ export const handleConnection = (
 
 				io.to(gameRoomId).emit("updateScores", updatedUsersInRoom);
 
+				// io.to(gameRoomId).emit("gameRoundDisplay", updatedUsersInRoom);
 				// Start new round
 				const virusPosition = calculateVirusPosition();
 				const delay = calculateRandomDelay();
 				debug('the delay is:', delay);
+
+
+				// Emit gameRoundDisplay with scores and timers before starting the next round
+
 
 				setTimeout(() => {
 					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
