@@ -6,6 +6,7 @@ import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
 import { get } from "node:http";
+import { Prisma } from "@prisma/client";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -54,20 +55,57 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 		},
 	});
 
+	if(!gameRoom){
+		debug('No gameRoom to find');
+		return;
+	};
+
+
+	//emit to the gameRoom that the user has left to the other user in the room
+	socket.to(user.gameRoomId).emit('userLeft', user.username);
+
+	//Find the user who is still in the room
+	const remainingUser = gameRoom.users.find(u => u.id !== user.id);
+
+	if (remainingUser) {
+		// Emit 'playAgain' to the user still in the room with their username
+		socket.to(user.gameRoomId).emit('playAgain', remainingUser.username);
+	};
+
+	debug(`${user.username} left game room ${user.gameRoomId}`);
+
+
+
+	try {
+		//try again to see if the room still exists before trying to delete
+        const existingRoom = await prisma.gameRoom.findUnique({
+            where: { id: user.gameRoomId },
+        });
+
+		//if room exists, do this:
+		if (existingRoom) {
+            await prisma.gameRoom.delete({
+                where: {
+					id: user.gameRoomId
+				},
+            });
+            debug(`Deleted the gameRoom: ${user.gameRoomId}`);
+        };
+
+	} catch (err) {
+		if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+            debug(`GameRoom ${user.gameRoomId} was already deleted`);
+		} else {
+            debug('Error deleting game room:', err);
+        }
+	};
+
+
+/*
 	//if that gameRoom exist for the user:
 	if(gameRoom){
-		//emit to the gameRoom that the user has left to the other user in the room
-		socket.to(user.gameRoomId).emit('userLeft', user.username);
 
-		//Find the user who is still in the room
-		const remainingUser = gameRoom.users.find(u => u.id !== user.id);
 
-		if (remainingUser) {
-			// Emit 'playAgain' to the user still in the room with their username
-			socket.to(user.gameRoomId).emit('playAgain', remainingUser.username);
-		};
-
-		debug(`${user.username} left game room ${user.gameRoomId}`);
 
 		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
 		await prisma.gameRoom.delete({
@@ -85,7 +123,7 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 			},
 		});
 
-	};
+	}; */
 };
 
 
