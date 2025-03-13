@@ -47,7 +47,7 @@ let username: string = '';
  * CREATE GRID
 */
 for (let i = 1; i <= 100; i++) {
-	gridContainerEl.innerHTML += `<div class="cells">${i}</div>`;
+	gridContainerEl.innerHTML += `<div class="cells"></div>`;
 }; //change later to Johan's example of creating grid (not priority)
 
 
