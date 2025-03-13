@@ -44,6 +44,8 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 		return;
 	};
 
+	socket.emit("afk", "You've been in the sauna for too long so you've become AFK.")
+
 	//Find the gameRoom that the user was in
 	const gameRoom = await prisma.gameRoom.findUnique({
 		where: {
@@ -446,6 +448,8 @@ export const handleConnection = (
 	socket.on("userAFK", () =>{
 		handleDisconnectOrRageQuit(socket);
 	});
+
+
 
 
 	// Handle a user disconnecting

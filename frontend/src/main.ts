@@ -57,7 +57,7 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-	}, 3000000000000);
+	}, 10000);
 };
 
 const displayCounter = () => {
@@ -343,9 +343,16 @@ socket.on("userLeft",(username) =>{
 	`;
 	rageQuitEl.classList.remove("hide");
 	gamePageEl.classList.add("hide");
-
+	
 });
 
+socket.on('afk', (username) => {
+	rageQuitEl.innerHTML = `
+		<h1>${username}</h1>
+	`;
+	rageQuitEl.classList.remove("hide");
+	gamePageEl.classList.add("hide");
+})
 
 
 
