@@ -5,7 +5,6 @@ import Debug from "debug";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
-import { get } from "node:http";
 import { Prisma } from "@prisma/client";
 
 // Create a new debug instance
@@ -77,7 +76,6 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
 	debug(`${user.username} left game room ${user.gameRoomId}`);
 
 
-
 	try {
 		//try again to see if the room still exists before trying to delete
         const existingRoom = await prisma.gameRoom.findUnique({
@@ -99,33 +97,8 @@ const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user di
             debug(`GameRoom ${user.gameRoomId} was already deleted`);
 		} else {
             debug('Error deleting game room:', err);
-        }
+        };
 	};
-
-
-/*
-	//if that gameRoom exist for the user:
-	if(gameRoom){
-
-
-
-		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
-		await prisma.gameRoom.delete({
-			where: {
-				id: user.gameRoomId,
-			},
-		});
-
-		debug('Deleted the gameRoom: ', user.gameRoomId);
-	} else {
-		//if user exists, but somehow not part of a gameRoom, delete the user
-		await prisma.user.delete({
-			where: {
-				id: socket.id,
-			},
-		});
-
-	}; */
 };
 
 
