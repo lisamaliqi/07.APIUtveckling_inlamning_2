@@ -356,8 +356,6 @@ export const handleConnection = (
 			//Emit to the client (frontend) that the user has joined the game room
 			io.to(gameRoomId).emit("userJoined", { username, gameRoomId });
 
-<<<<<<< HEAD
-=======
 			const usersInRoom = await prisma.user.findMany({
 				where:	{
 					gameRoomId
@@ -381,7 +379,6 @@ export const handleConnection = (
 					io.to(gameRoomId).emit('virusPosition', virusPosition);
 				}, delay);
 			};
->>>>>>> dev
 
 		} catch (err) {
 			debug("Error joining game room", err);
@@ -412,22 +409,7 @@ export const handleConnection = (
 		const usernames = gameRoom.users.map(user => user.username);
 
 		//Emit to the client (frontend) the amount of users in the game room
-<<<<<<< HEAD
-		socket.emit("usersInRoom", gameRoom.users.length);
-		
-		const gameResults = gameRoom.users.map(user =>({ //lagt till
-			id: user.id,
-			username: user.username,
-			score: user.score ?? 0, 
-			timer: user.timer,
-			gameRoomId: user.gameRoomId ?? "",
-		}));
-		debug("Sending game results:", gameResults);
-		io.to(gameRoomId).emit('displayGameResults',gameResults); //lagt till
-		
-=======
 		socket.emit("usersInRoom", gameRoom.users.length, usernames);
->>>>>>> dev
 	});
 
 
