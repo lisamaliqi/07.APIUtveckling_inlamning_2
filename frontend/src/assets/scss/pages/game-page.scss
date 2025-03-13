@@ -18,25 +18,31 @@ body {
     justify-content: center;
     align-items: center;
     width: 80vw; 
-    height: 40%;
+    height: 50px;
     max-width: 1500px;
     margin: 5px;
     font-size: 30px;
+    text-align: center;
 
 
     .playing-user{
         #users.name{
             font-weight: bold; //?
         }
-        color: skyblue;
+        color: magenta;
     }
     .opponent-user{
-        color: magenta;
+        color: gray;
     }
 }
 
 #score{
     font-size: 60px;
+}
+
+.module-border-wrap {
+    background: linear-gradient(to right, #fcb32b, #ff7230, #ee5c9e, #ac6dcd, #24b1ea,);
+    padding: 3px;
 }
 
 
@@ -45,7 +51,7 @@ body {
     grid-template-columns: repeat(10, 1fr); /* Max 10 columns */
     grid-template-rows: repeat(10, 1fr);    /* Max 10 rows */
     background-color: #ddd;
-    border: 2px solid black;
+    //border: 2px solid black;
     width: 80vw; /* Adjust width as needed */
     height: 70vh; /* Adjust height as needed to maintain square grid items */
     max-width: 1500px;
@@ -53,8 +59,8 @@ body {
     margin-left: 5px;
 
     .cells {
-        background-color: #ddd;
-        border: 1px solid black;
+        background-color: white;
+        //border: 1px solid black; // bort med grid 
         display: flex;
         justify-content: center;
         align-items: center;

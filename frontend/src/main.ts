@@ -21,11 +21,7 @@ const loginWrapperEl = document.querySelector('#login-wrapper') as HTMLDivElemen
 const gamePageEl = document.querySelector('.game-page') as HTMLDivElement;
 const waitingForPlayerEl = document.querySelector('.waiting-for-player') as HTMLDivElement;
 const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
-//const currentScoreEl = document.querySelector('#score') as HTMLDivElement; // ny
-//const reactionTimesEl = document.querySelector('#time') as HTMLDivElement; // ny
-//const playingUserEl = document.querySelector('#users-name') as HTMLDivElement; // ny
-//const opponentUserEl = document.querySelector('#opponents-name') as HTMLDivElement; // ny
-//const scoreboard = document.querySelector('#scoreboard') as HTMLDivElement; // ny
+
 
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement
@@ -125,11 +121,16 @@ socket.on('displayGameResults', (users: User[]) => {
 		console.log("Couldn't find player or opponent");
 		return;
 	}
+
+	console.log("Player:", player);
+    console.log("Opponent:", opponent);
 	
 	scoreboard.innerHTML = `
 	<span class="playing-user"> ${player.username} ${player.timer ?? 0} ${player.score} </span> - 
 	<span class="opponent-user"> ${opponent.score} ${opponent.timer ?? 0} ${opponent.username} </span>
 	`;
+
+	console.log("Updated scoreboard HTML:", scoreboard.innerHTML);
 	
 });
 

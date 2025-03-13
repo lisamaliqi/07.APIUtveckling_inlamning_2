@@ -164,6 +164,7 @@ export const handleConnection = (
 			//Emit to the client (frontend) that the user has joined the game room
 			io.to(gameRoomId).emit("userJoined", { username, gameRoomId });
 
+
 		} catch (err) {
 			debug("Error joining game room", err);
 		};
@@ -191,7 +192,7 @@ export const handleConnection = (
 
 		//Emit to the client (frontend) the amount of users in the game room
 		socket.emit("usersInRoom", gameRoom.users.length);
-
+		
 		const gameResults = gameRoom.users.map(user =>({ //lagt till
 			id: user.id,
 			username: user.username,
@@ -199,10 +200,10 @@ export const handleConnection = (
 			timer: user.timer,
 			gameRoomId: user.gameRoomId ?? "",
 		}));
-		console.log("Sending game results:", gameResults);
+		debug("Sending game results:", gameResults);
 		io.to(gameRoomId).emit('displayGameResults',gameResults); //lagt till
+		
 	});
-
 
 
 	socket.on('getAllActiveRooms', async () => {
