@@ -56,7 +56,7 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
-	}, 30000);
+	}, 3000000000000);
 } ;
 
 const placeObject = (position: number) => { //Place virus on grid
@@ -188,14 +188,24 @@ socket.io.on("reconnect", () => {
 
 
 //Listen for when the server emits the updateScores event
-socket.on("updateScores", (users) => {
-    console.log("Updated scores:", users);
-    users.forEach((user) => { //For each user, log their username and score
+socket.on("updateScores", (data) => {
+    console.log("Updated scores:", data.scores);
+   /*  scores.forEach((user) => { //For each user, log their username and score
         console.log(`${user.username}: ${user.score} points`);
-    });
+		console.log(`${user.username}: ${user.timer} time`);
+    }); */
 
 	const scoreDisplayEl = document.querySelector('#score') as HTMLDivElement;
-	scoreDisplayEl.innerHTML = `${users[0].score} - ${users[1].score}`;
+	scoreDisplayEl.innerHTML = `${data.scores[0].score} - ${data.scores[1].score}`;
+
+	const timer1 = data.scores[0].timer;
+    const timer2 = data.scores[1].timer;
+
+	document.querySelector('#timer1')!.textContent = timer1;
+	document.querySelector('#timer2')!.textContent = timer2;
+
+
+	// const userTimer = users[0].timer
 	
 	//update realtime the score to users that are in the landing-page
 	socket.emit('getAllActiveRooms');

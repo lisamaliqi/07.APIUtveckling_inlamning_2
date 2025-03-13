@@ -140,7 +140,7 @@ export const handleConnection = (
 
 
 			//Check if both users has a value of not NULL in their timer
-			const bothUsersReacted = usersInRoom.every(user => user.timer !== null);
+			const bothUsersReacted = usersInRoom.every(user => user.timer !== 0);
 
 			//If both users have a timer thats not NULL
 			if(bothUsersReacted){
@@ -251,9 +251,15 @@ export const handleConnection = (
 					},
 				});
 
-				io.to(gameRoomId).emit("updateScores", updatedUsersInRoom);
+				io.to(gameRoomId).emit("updateScores", {
+					scores: updatedUsersInRoom.map(user => ({
+						id: user.id,
+						username: user.username,
+						score: user.score,
+						timer: (user.timer / 1000).toFixed(2), // Convert milliseconds to seconds and keep two decimals
+					}))
+				});
 
-				// io.to(gameRoomId).emit("gameRoundDisplay", updatedUsersInRoom);
 				// Start new round
 				const virusPosition = calculateVirusPosition();
 				const delay = calculateRandomDelay();
@@ -274,7 +280,7 @@ export const handleConnection = (
 						gameRoomId
 					},
 					data: {
-						timer: null
+						timer: 0,
 					},
 				});
 			};
@@ -339,7 +345,7 @@ export const handleConnection = (
 					username: username,
 					gameRoomId: gameRoomId,
 					score: 0,
-					timer: null,
+					timer: 0,
 				},
 			});
 			debug("create a user", user);
