@@ -24,7 +24,7 @@
 				<button type="submit" id="joinBtn" class="btn btn-light">Join!</button>
 			</form>
 			
-			<div class="mb-3" id="top10Games"> Top 10 Games </div>
+			<div class="mb-3" id="last10Games"> Last 10 Games </div>
 			
 		</div>
 
@@ -37,34 +37,40 @@
 		 <!-- GAME PAGE -->
 		 <div class="game-page"> <!--d-flex flex-column justify-content-center align-items-center-->
 			 <div id="scoreboard">
-				 <div class="d-flex justify-content-center">17:10</div>
+				 <div class="d-flex justify-content-center counter">00:00</div>
 				 <div class="d-flex justify-content-between align-items-center">
+<<<<<<< HEAD
 					 <div class="p-4 text-primary username" id="users-name"></div>
 					 <div class="" id="time"></div>
 					 <div class="" id="score"></div>
 					 <div class="" id="time"></div>
 					 <div class="p-4 text-danger username" id="opponents-name"></div>
+=======
+					 <div class="p-4 text-primary username" id="player1">Username: </div>
+					 <div class="" id="timer1">00:00</div>
+					 <div class="" id="score">0 - 0</div>
+					 <div class="" id="timer2">00:00</div>
+					 <div class="p-4 text-danger username" id="player2">Username: </div>
+>>>>>>> dev
 				 </div>
 			 </div>
 			 <div id="grid-container" class="module-border-wrap"></div>
 		 </div>
 
 		 <!-- WON PAGE -->
-		 <div id="won-page" class="result-page hide">
-			 <h1>YOU WON!</h1>
-			 <button class="play-again btn">Play Again</button>
-		 </div>
+		 <div id="won-page" class="result-page hide"></div>
 
 		 <!-- LOST PAGE -->
-		 <div id="lost-page" class="result-page hide">
-			<h1>YOU LOST!</h1>
-			<button class="play-again btn">Play Again</button>
-		</div>
+		 <div id="lost-page" class="result-page hide"></div>
 
 		 <!-- DRAW PAGE -->
-		 <div id="draw-page" class="result-page hide">
-			<h1>ITS A DRAW!</h1>
-			<button class="play-again btn">Play Again</button>
+		 <div id="draw-page" class="result-page hide"></div>
+
+		<!-- RAGEQUIT PAGE -->
+		<div id="ragequit-page" class="result-page hide"></div>
+
+		<div id="ragequit-page" class="result-page hide">
+
 		</div>
 
 

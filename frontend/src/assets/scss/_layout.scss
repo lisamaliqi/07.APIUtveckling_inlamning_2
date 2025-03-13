@@ -61,12 +61,18 @@ body {
         }
     }
 
+<<<<<<< HEAD
     #top10Games {
     margin-top: 10%;
+=======
+    #last10Games {
+    margin-top: 100px;
+>>>>>>> dev
     background-color: lightgray ;
     width: 25%;
     height: 500px; 
 
+<<<<<<< HEAD
     @media (max-width: 600px) {
         width: 60%;
         
@@ -103,6 +109,19 @@ body {
         margin-top: 20px;
         font-size: 20px;
         color: white;
+=======
+        .users {
+            display: flex;
+        }
+
+        li {
+            list-style-type: none;
+        }
+        
+        .versus {
+            margin: 0 10px; /* Adjust the margin as needed */
+        }
+>>>>>>> dev
     }
 }
 

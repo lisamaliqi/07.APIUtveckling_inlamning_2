@@ -5,6 +5,7 @@ import Debug from "debug";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, ServerToClientEvents } from "@shared/types/SocketEvents.types";
 import prisma from "../prisma";
+import { get } from "node:http";
 
 // Create a new debug instance
 const debug = Debug("backend:socket_controller");
@@ -17,49 +18,114 @@ const calculateVirusPosition = () => { //Calculate the random position the virus
 	return Math.floor(Math.random() * 100);
 };
 
+const calculateRandomDelay = ()=> { //Calculate the random delay for the virus to appear on the grid, between 1500ms and 10000ms
+	// return Math.floor(Math.random() * (10000 - 1500 + 1)) + 1500;
+	return 500;
+};
+
+
+const handleDisconnectOrRageQuit = async (socket: Socket) => {//Handle a user disconnecting or rage quitting
+	debug("👋 A user disconnected", socket.id);
+
+	//find user, if any
+	const user = await prisma.user.findUnique({
+		where: {
+			id: socket.id,
+		},
+		include: {
+			room: true,
+		},
+	});
+	debug('user that disconnected: ', user);
+
+	//if no user found, return
+	if(!user){
+		debug('No user to find');
+		return;
+	};
+
+	//Find the gameRoom that the user was in
+	const gameRoom = await prisma.gameRoom.findUnique({
+		where: {
+			id: user.gameRoomId,
+		},
+		include: {
+			users: true,
+		},
+	});
+
+	//if that gameRoom exist for the user:
+	if(gameRoom){
+		//emit to the gameRoom that the user has left to the other user in the room
+		socket.to(user.gameRoomId).emit('userLeft', user.username);
+
+		debug(`${user.username} left game room ${user.gameRoomId}`);
+
+		//delete the gameRoom, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
+		await prisma.gameRoom.delete({
+			where: {
+				id: user.gameRoomId,
+			},
+		});
+
+		debug('Deleted the gameRoom: ', user.gameRoomId);
+	} else {
+		//if user exists, but somehow not part of a gameRoom, delete the user
+		await prisma.user.delete({
+			where: {
+				id: socket.id,
+			},
+		});
+
+	};
+};
+
 
 
 // Handle a user connecting
 export const handleConnection = (
 	socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	io: Server<ClientToServerEvents, ServerToClientEvents>
 ) => {
 	debug("🙋 A user connected", socket.id);
 
 
 	//Listen for the gameRound event from the client (frontend)
-	socket.on('gameRound', (gameRoomId) => {
+	/* socket.on('gameRound', (gameRoomId) => {
 		debug("🎮 Game round started");
 
 		//make the position of the virus random with calculateVirusPosition function
 		const virusPosition = calculateVirusPosition();
 
-		//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
-		io.to(gameRoomId).emit('virusPosition', virusPosition);
-	});
+		const delay = calculateRandomDelay();
+
+		setTimeout(() => {
+			//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+			io.to(gameRoomId).emit('virusPosition', virusPosition);
+
+		}, delay);
+
+	}); */
 
 
 
-	socket.on("virusClickedByUser", async ({ gameRoomId, userId }) => {
-		debug("Virus clicked by user:", userId);
+	socket.on("virusClickedByUser", async ({ gameRoomId, userId, reactionTime }) => {
+		debug(`Virus clicked by user ${userId}, reaction time is: ${reactionTime}`);
 
 		try {
-			//Find the user that clicked the virus and update their score with +1
+			//Find the user that clicked the virus and update their timer with the reaction time
 			const user = await prisma.user.update({
 				where: {
 					id: userId
 				},
 				data: {
-					score: {
-						increment: 1 //+ score by 1
-					},
+					timer: reactionTime, //users reaction time is added to the timer in schema
 				},
 			});
 
-			debug(`Updated score for ${user.username}, new score is ${user.score}:`);
+			debug('user that clicked the virus: ', user);
 
-			//Emit the updated scores to all players in the room
+			//Find all the users in the gameRoom so that i later can calculate if both of them have pressed the virus AND check who's the fastest
 			const usersInRoom = await prisma.user.findMany({
 				where: {
 					gameRoomId
@@ -68,29 +134,156 @@ export const handleConnection = (
 					id: true,
 					username: true,
 					score: true,
-					timer: true, //add timer later
+					timer: true,
 				},
 			});
 
-			//add +1 in the gameRound when the virus is clicked
-			const updateGameRound = await prisma.gameRoom.update({
-				where: {
-					id: gameRoomId
-				},
-				data: {
-					gameRound: {
-						increment: 1 //+ gameRound by 1
+
+			//Check if both users has a value of not NULL in their timer
+			const bothUsersReacted = usersInRoom.every(user => user.timer !== 0);
+
+			//If both users have a timer thats not NULL
+			if(bothUsersReacted){
+				//Reduce all the users to the fastest user, compare which user has the fastest timer and return that user
+				const fastestUser = usersInRoom.reduce((fastest, user) => {
+					if(!fastest || user.timer! < fastest.timer!) {
+						return user;
+					};
+					return fastest;
+				}, usersInRoom[0]); //start with first user in the array
+
+				//Take the fastest user and increment their score with +1
+				const roundWinnerUser = await prisma.user.update({
+					where: {
+						id: fastestUser.id,
 					},
-				},
-			});
+					data: {
+						score: {
+							increment: 1,
+						},
+					},
+				});
 
-			debug(`Updated game round for ${gameRoomId}, new game round is ${updateGameRound.gameRound}:`);
+				debug(`the round winner is ${roundWinnerUser.username} and their score is ${roundWinnerUser.score}`);
 
-			io.to(gameRoomId).emit("updateScores", usersInRoom);
 
-			// Start new round
-			const virusPosition = calculateVirusPosition();
-			io.to(gameRoomId).emit("virusPosition", virusPosition);
+				//Increment the game round with +1
+				const updateGameRound = await prisma.gameRoom.update({
+					where: {
+						id: gameRoomId
+					},
+					data: {
+						gameRound: {
+							increment: 1
+						},
+					},
+				});
+
+				debug(`Updated game round for ${gameRoomId}, new game round is ${updateGameRound.gameRound}:`);
+
+				//return if gameRound somehow is null
+				if(!updateGameRound.gameRound) {
+					debug('gameround apparently is null?');
+					return;
+				};
+
+				//If 10 rounds has been played -> END GAME
+				if (updateGameRound.gameRound > 6) {
+					debug(`game over!! No more games for room ${gameRoomId}`);
+
+					//take out the score for the users
+					const finalScoreForUsers = await prisma.user.findMany({
+						where: {
+							gameRoomId
+						},
+						select: {
+							id: true,
+							username: true,
+							score: true,
+						},
+					});
+
+					debug('final score for users: ', finalScoreForUsers);
+
+					io.to(gameRoomId).emit('gameEnded', { scores: finalScoreForUsers });
+
+					try {
+						//take the information from the gameRoom and add that information to the scoreBoard database
+						const createScoreBoard = await prisma.scoreBoard.create({
+							data: {
+								gameRoomId,
+								users: {
+									create: finalScoreForUsers.map(user => ({
+										id: user.id,
+										username: user.username,
+										score: user.score,
+									})),
+								},
+							},
+						});
+
+						debug('ScoreBoard created: ', createScoreBoard );
+
+						//delete the gameRoom after adding information to scoreBoard, it will automatically delete the users aswell bc "onDelete: Cascade" in prisma schema
+						await prisma.gameRoom.delete({
+							where: {
+								id: gameRoomId,
+							},
+						});
+
+						debug('Deleted the gameRoom: ', gameRoomId);
+
+					} catch (err) {
+						debug('Error when adding the game to the scoreBoard or when deleting the gameRoom', err)
+					};
+				};
+
+				// Emit updated scores and start new round
+				const updatedUsersInRoom = await prisma.user.findMany({
+					where: {
+						gameRoomId
+					},
+					select: {
+						id: true,
+						username: true,
+						score: true,
+						timer: true,
+					},
+				});
+
+				io.to(gameRoomId).emit("updateScores", {
+					scores: updatedUsersInRoom.map(user => ({
+						id: user.id,
+						username: user.username,
+						score: user.score,
+						timer: (user.timer / 1000).toFixed(2), // Convert milliseconds to seconds and keep two decimals
+					}))
+				});
+
+				// Start new round
+				const virusPosition = calculateVirusPosition();
+				const delay = calculateRandomDelay();
+				debug('the delay is:', delay);
+
+
+				// Emit gameRoundDisplay with scores and timers before starting the next round
+
+
+				setTimeout(() => {
+					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+					io.to(gameRoomId).emit('virusPosition', virusPosition);
+				}, delay);
+
+				// Reset timers for the next round to NULL
+				await prisma.user.updateMany({
+					where: {
+						gameRoomId
+					},
+					data: {
+						timer: 0,
+					},
+				});
+			};
 
 		} catch (err) {
 			debug("Error updating score", err);
@@ -110,7 +303,6 @@ export const handleConnection = (
 			debug("User already exists");
 			return;
 		};
-
 
 		try {
 			//--------- CREATE OR JOIN GAME ROOM ---------//
@@ -153,7 +345,7 @@ export const handleConnection = (
 					username: username,
 					gameRoomId: gameRoomId,
 					score: 0,
-					timer: null,
+					timer: 0,
 				},
 			});
 			debug("create a user", user);
@@ -164,6 +356,32 @@ export const handleConnection = (
 			//Emit to the client (frontend) that the user has joined the game room
 			io.to(gameRoomId).emit("userJoined", { username, gameRoomId });
 
+<<<<<<< HEAD
+=======
+			const usersInRoom = await prisma.user.findMany({
+				where:	{
+					gameRoomId
+				},
+			});
+
+			debug('users in game room: ', usersInRoom)
+			debug('useres in game room length: ', usersInRoom.length)
+
+			if(usersInRoom.length === 2) {
+				debug('starting game in gameroom: ', gameRoomId);
+				// io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
+
+				// Start new round
+				const virusPosition = calculateVirusPosition();
+				const delay = calculateRandomDelay();
+				debug('the delay is:', delay);
+
+				setTimeout(() => {
+					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
+					io.to(gameRoomId).emit('virusPosition', virusPosition);
+				}, delay);
+			};
+>>>>>>> dev
 
 		} catch (err) {
 			debug("Error joining game room", err);
@@ -190,7 +408,11 @@ export const handleConnection = (
 			return;
 		};
 
+		//Create array of the usernames in the gameRoom so that i can display it in the frontEnd
+		const usernames = gameRoom.users.map(user => user.username);
+
 		//Emit to the client (frontend) the amount of users in the game room
+<<<<<<< HEAD
 		socket.emit("usersInRoom", gameRoom.users.length);
 		
 		const gameResults = gameRoom.users.map(user =>({ //lagt till
@@ -203,6 +425,9 @@ export const handleConnection = (
 		debug("Sending game results:", gameResults);
 		io.to(gameRoomId).emit('displayGameResults',gameResults); //lagt till
 		
+=======
+		socket.emit("usersInRoom", gameRoom.users.length, usernames);
+>>>>>>> dev
 	});
 
 
@@ -214,16 +439,35 @@ export const handleConnection = (
 			},
 		});
 
-		debug("All active game rooms", allActiveGameRooms);
+		// debug("All active game rooms", allActiveGameRooms);
 
 		//Send all the active game rooms to the client (frontend)
-		socket.emit('allActiveGameRooms', allActiveGameRooms);
+		io.emit('allActiveGameRooms', allActiveGameRooms);
+	});
+
+
+	socket.on('get10LastGamesPlayed', async () => {
+		const last10GamesPlayed = await prisma.scoreBoard.findMany({
+			include: {
+				users: true,
+			},
+			take: -10,
+		});
+
+		// debug('10 last games played: ', last10GamesPlayed);
+
+		io.emit('last10GamesPlayed', last10GamesPlayed); //io.emit so that it sends to ALL users in the landing page
+	});
+
+
+	socket.on("userAFK", () =>{
+		handleDisconnectOrRageQuit(socket);
 	});
 
 
 	// Handle a user disconnecting
 	socket.on("disconnect", () => {
-		debug("👋 A user disconnected", socket.id);
+		handleDisconnectOrRageQuit(socket);
 	});
 };
 
