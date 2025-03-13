@@ -18,21 +18,58 @@ body {
     justify-content: center;
     align-items: center;
     width: 80vw; 
-    height: 50px;
+    height: 15vh;
     max-width: 1500px;
     margin: 5px;
-    font-size: 30px;
     text-align: center;
 
+    #timer {
+        font-size: 30px;
 
-    .playing-user{
-        #users.name{
-            font-weight: bold; //?
+        @media (max-width: 800px) {
+            font-size: 25px;   
         }
-        color: magenta;
     }
-    .opponent-user{
-        color: gray;
+
+    #player1 {
+        color: #24b1ea;
+        font-size: 40px;
+
+        @media (max-width: 750px) {
+            font-size: 25px;
+            
+        }
+    }
+    #player2 {
+        color: #ee5c9e;
+        font-size: 40px;
+
+        @media (max-width: 750px) {
+            font-size: 25px;
+            
+        }
+    }
+    #timer1, #timer2 {
+       font-size: 30px;
+
+       @media (max-width: 800px) {
+        font-size: 25px;   
+    }
+    }
+
+    #score{
+        font-size: 60px;
+        margin-bottom: 15px;
+
+        @media (max-width: 800px) {
+            font-size: 50px;
+            
+        }
+        @media (max-width: 600px) {
+            font-size: 20px;
+            
+        }
+
     }
 }
 
@@ -57,10 +94,10 @@ body {
     max-width: 1500px;
     //height: 80%;
     margin-left: 5px;
+    cursor: url('src/assets/img/bastu-3.png'), auto;
 
     .cells {
         background-color: white;
-        //border: 1px solid black; // bort med grid 
         display: flex;
         justify-content: center;
         align-items: center;
@@ -71,8 +108,7 @@ body {
             font-size: 2em; /* Adjust size as needed */
             display: flex;
             justify-content: center;
-            align-items: center;
-            cursor: pointer; //cursor:url('björkris.png'), auto;
+            align-items: center;   
         }
     }
 }

@@ -235,36 +235,6 @@ socket.on("updateScores", (data) => {
 	
 });
 
-/* 
-socket.on('displayGameResults', (users: User[]) => {
-	console.log("Received game results:", users);  //ny
-	const scoreboard = document.getElementById('scoreboard');
-
-	if(!scoreboard) {
-		console.log("Couldn't find scoreboard");
-		return;
-	}
-
-	const player = users.find(user => user.id === socket.id);
-	const opponent = users.find(user => user.id !== socket.id);
-
-	if(!player || !opponent) {
-		console.log("Couldn't find player or opponent");
-		return;
-	}
-
-	console.log("Player:", player);
-    console.log("Opponent:", opponent);
-	
-	scoreboard.innerHTML = `
-	<span class="playing-user"> ${player.username} ${player.timer ?? 0} ${player.score} </span> - 
-	<span class="opponent-user"> ${opponent.score} ${opponent.timer ?? 0} ${opponent.username} </span>
-	`;
-
-	console.log("Updated scoreboard HTML:", scoreboard.innerHTML);
-	
-});
-*/
 
 socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 	// console.log('All active game rooms:', allActiveGameRooms);
