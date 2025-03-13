@@ -91,7 +91,7 @@ export const handleConnection = (
 
 
 	//Listen for the gameRound event from the client (frontend)
-	socket.on('gameRound', (gameRoomId) => {
+	/* socket.on('gameRound', (gameRoomId) => {
 		debug("🎮 Game round started");
 
 		//make the position of the virus random with calculateVirusPosition function
@@ -105,7 +105,7 @@ export const handleConnection = (
 
 		}, delay);
 
-	});
+	}); */
 
 
 
@@ -140,7 +140,7 @@ export const handleConnection = (
 
 
 			//Check if both users has a value of not NULL in their timer
-			const bothUsersReacted = usersInRoom.every(user => user.timer !== null);
+			const bothUsersReacted = usersInRoom.every(user => user.timer !== 0);
 
 			//If both users have a timer thats not NULL
 			if(bothUsersReacted){
@@ -188,7 +188,7 @@ export const handleConnection = (
 				};
 
 				//If 10 rounds has been played -> END GAME
-				if (updateGameRound.gameRound > 2) {
+				if (updateGameRound.gameRound > 6) {
 					debug(`game over!! No more games for room ${gameRoomId}`);
 
 					//take out the score for the users
@@ -251,12 +251,23 @@ export const handleConnection = (
 					},
 				});
 
-				io.to(gameRoomId).emit("updateScores", updatedUsersInRoom);
+				io.to(gameRoomId).emit("updateScores", {
+					scores: updatedUsersInRoom.map(user => ({
+						id: user.id,
+						username: user.username,
+						score: user.score,
+						timer: (user.timer / 1000).toFixed(2), // Convert milliseconds to seconds and keep two decimals
+					}))
+				});
 
 				// Start new round
 				const virusPosition = calculateVirusPosition();
 				const delay = calculateRandomDelay();
 				debug('the delay is:', delay);
+
+
+				// Emit gameRoundDisplay with scores and timers before starting the next round
+
 
 				setTimeout(() => {
 					//emit the virusPosition to the client (frontend) with the gameRoomId that corresponds to the game room the user is in
@@ -269,7 +280,7 @@ export const handleConnection = (
 						gameRoomId
 					},
 					data: {
-						timer: null
+						timer: 0,
 					},
 				});
 			};
@@ -334,7 +345,7 @@ export const handleConnection = (
 					username: username,
 					gameRoomId: gameRoomId,
 					score: 0,
-					timer: null,
+					timer: 0,
 				},
 			});
 			debug("create a user", user);
@@ -356,7 +367,7 @@ export const handleConnection = (
 
 			if(usersInRoom.length === 2) {
 				debug('starting game in gameroom: ', gameRoomId);
-				io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
+				// io.to(gameRoomId).emit('usersInRoom', usersInRoom.length);
 
 				// Start new round
 				const virusPosition = calculateVirusPosition();
@@ -394,10 +405,12 @@ export const handleConnection = (
 			return;
 		};
 
-		//Emit to the client (frontend) the amount of users in the game room
-		socket.emit("usersInRoom", gameRoom.users.length);
-	});
+		//Create array of the usernames in the gameRoom so that i can display it in the frontEnd
+		const usernames = gameRoom.users.map(user => user.username);
 
+		//Emit to the client (frontend) the amount of users in the game room
+		socket.emit("usersInRoom", gameRoom.users.length, usernames);
+	});
 
 
 	socket.on('getAllActiveRooms', async () => {
@@ -408,7 +421,7 @@ export const handleConnection = (
 			},
 		});
 
-		debug("All active game rooms", allActiveGameRooms);
+		// debug("All active game rooms", allActiveGameRooms);
 
 		//Send all the active game rooms to the client (frontend)
 		io.emit('allActiveGameRooms', allActiveGameRooms);
@@ -423,7 +436,7 @@ export const handleConnection = (
 			take: -10,
 		});
 
-		debug('10 last games played: ', last10GamesPlayed);
+		// debug('10 last games played: ', last10GamesPlayed);
 
 		io.emit('last10GamesPlayed', last10GamesPlayed); //io.emit so that it sends to ALL users in the landing page
 	});

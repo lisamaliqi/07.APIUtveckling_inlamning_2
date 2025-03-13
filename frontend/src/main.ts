@@ -23,6 +23,7 @@ const activeGamesEl = document.querySelector('#activeGames') as HTMLDivElement;
 const last10Games = document.querySelector('#last10Games') as HTMLDivElement;
 const rageQuitEl = document.querySelector("#ragequit-page") as HTMLDivElement;
 
+
 //Form
 const joinGameEl = document.querySelector("#login-form") as HTMLFormElement;
 const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
@@ -35,6 +36,7 @@ const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
 let username: string | null = null;
 let gameRoomId: string | null =null;
 let timerStart: number; 
+let timerInterval: number;
 let virusClickTimer: number;
 
 
@@ -56,17 +58,44 @@ const resetTimer = () => {
 	clearTimeout(virusClickTimer)
 	virusClickTimer = setTimeout(()=> {
 		socket.emit('userAFK');
+<<<<<<< HEAD
 	}, 30000000);
 } ;
+=======
+	}, 3000000000000);
+};
+
+const displayCounter = () => {
+	const counterEl = document.querySelector('.counter') as HTMLDivElement;
+
+	clearTimeout(timerInterval);
+
+	// Update the counter every 100 milliseconds (0.1 second)
+    timerInterval = setInterval(() => {
+        const elapsedTime = (Date.now() - timerStart) / 1000; // Calculate elapsed time in seconds
+        const formattedTime = elapsedTime.toFixed(2); // Format to 2 decimals
+        if (counterEl) {
+            counterEl.textContent = formattedTime; // Update the counter element with the time
+        }
+    }, 100); // Run every 100ms to make it smooth
+};
+>>>>>>> feature/display_gameResult
 
 const placeObject = (position: number) => { //Place virus on grid
+	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
+	resetTimer();
+
+	displayCounter();
+
+
+
 	const cellsEl = document.querySelectorAll(".cells");
 
 	//Remove all objects from grid (numbers and previous virus positions)
 	cellsEl.forEach(cell => cell.innerHTML = "");
 
 	//Place the virus at the random index, index is taken from "virusPosition" socket event
-	cellsEl[position].innerHTML = "<span class='object'>🦠</span>";
+	cellsEl[position].innerHTML = "<span class='object'><img src='/src/assets/img/ledsen-mans2.0.png' width='100px' alt='sad måns'></span>";
 
 	//start timer
 	timerStart = Date.now();
@@ -74,8 +103,6 @@ const placeObject = (position: number) => { //Place virus on grid
 	//When a user clicks on the virus, emit to server (backend) that new gameRound should start, and virus should be placed at a new position
 	const objectEl = document.querySelector('.object') as HTMLSpanElement;
 
-	//reset the timer when the virus is placed to calculate if longer than 30 sek = userAFK = disconnect
-	resetTimer();
 
 	objectEl.addEventListener('click', () => {
 		if (!gameRoomId || !socket.id) {
@@ -188,11 +215,24 @@ socket.io.on("reconnect", () => {
 
 
 //Listen for when the server emits the updateScores event
-socket.on("updateScores", (users) => {
-    console.log("Updated scores:", users);
-    users.forEach((user) => { //For each user, log their username and score
+socket.on("updateScores", (data) => {
+    console.log("Updated scores:", data.scores);
+   /*  scores.forEach((user) => { //For each user, log their username and score
         console.log(`${user.username}: ${user.score} points`);
-    });
+		console.log(`${user.username}: ${user.timer} time`);
+    }); */
+
+	const scoreDisplayEl = document.querySelector('#score') as HTMLDivElement;
+	scoreDisplayEl.innerHTML = `${data.scores[0].score} - ${data.scores[1].score}`;
+
+	const timer1 = data.scores[0].timer;
+    const timer2 = data.scores[1].timer;
+
+	document.querySelector('#timer1')!.textContent = timer1;
+	document.querySelector('#timer2')!.textContent = timer2;
+
+
+	// const userTimer = users[0].timer
 	
 	//update realtime the score to users that are in the landing-page
 	socket.emit('getAllActiveRooms');
@@ -200,9 +240,39 @@ socket.on("updateScores", (users) => {
 	
 });
 
+/* 
+socket.on('displayGameResults', (users: User[]) => {
+	console.log("Received game results:", users);  //ny
+	const scoreboard = document.getElementById('scoreboard');
+
+	if(!scoreboard) {
+		console.log("Couldn't find scoreboard");
+		return;
+	}
+
+	const player = users.find(user => user.id === socket.id);
+	const opponent = users.find(user => user.id !== socket.id);
+
+	if(!player || !opponent) {
+		console.log("Couldn't find player or opponent");
+		return;
+	}
+
+	console.log("Player:", player);
+    console.log("Opponent:", opponent);
+	
+	scoreboard.innerHTML = `
+	<span class="playing-user"> ${player.username} ${player.timer ?? 0} ${player.score} </span> - 
+	<span class="opponent-user"> ${opponent.score} ${opponent.timer ?? 0} ${opponent.username} </span>
+	`;
+
+	console.log("Updated scoreboard HTML:", scoreboard.innerHTML);
+	
+});
+*/
 
 socket.on('allActiveGameRooms', (allActiveGameRooms) => {
-	console.log('All active game rooms:', allActiveGameRooms);
+	// console.log('All active game rooms:', allActiveGameRooms);
 	activeGamesEl.innerHTML = "Active Games";
 
 	//For each room, do this:
@@ -235,7 +305,7 @@ socket.on('allActiveGameRooms', (allActiveGameRooms) => {
 
 
 socket.on('last10GamesPlayed', (last10GamesPlayed) => {
-	console.log('Last 10 games: ', last10GamesPlayed);
+	// console.log('Last 10 games: ', last10GamesPlayed);
 	last10Games.innerHTML = "Last 10 Games";
 
 	last10GamesPlayed.forEach((game) => {
@@ -265,8 +335,9 @@ socket.on('last10GamesPlayed', (last10GamesPlayed) => {
 
 
 //Listen for when the server emits the usersInRoom event
-socket.on('usersInRoom', (amountOfUsers: number) => {
-	console.log('Users in room:', amountOfUsers);
+socket.on('usersInRoom', (amountOfUsers: number, usernames: string[]) => {
+	console.log('Amount of users in room:', amountOfUsers);
+	console.log('Usernames in room:', usernames);
 	
 	//if there are 2 users in the room, hide waiting for player and show the game page
 	if (amountOfUsers === 2) {
@@ -274,6 +345,10 @@ socket.on('usersInRoom', (amountOfUsers: number) => {
 		gamePageEl.classList.remove('hide');
 		
 		console.log('Starting game...');
+
+		// Assign usernames to HTML elements
+        document.querySelector('#player1')!.textContent = `${usernames[0]}`;
+        document.querySelector('#player2')!.textContent = `${usernames[1]}`;
 
 		socket.emit('getAllActiveRooms');
 		socket.emit('get10LastGamesPlayed');	

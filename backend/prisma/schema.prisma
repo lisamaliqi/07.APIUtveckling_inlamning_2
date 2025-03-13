@@ -37,7 +37,7 @@ model User {
   username      String
   gameRoomId    String      @db.ObjectId
   score         Int         
-  timer         Float?
+  timer         Float
 
   room          GameRoom?    @relation(fields: [gameRoomId], references: [id], onDelete: Cascade)
 }
