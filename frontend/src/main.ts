@@ -77,7 +77,7 @@ const displayCounter = () => { //display the counter
         if (counterEl) {
             counterEl.textContent = formattedTime; // Update the counter element with the time
         };
-    }, 100); // Run every 100ms to make it smooth
+    }, 10); // Run every 100ms to make it smooth
 };
 
 const placeObject = (position: number) => { //Place virus on grid
@@ -110,6 +110,9 @@ const placeObject = (position: number) => { //Place virus on grid
 		};
 
 		resetTimer();
+
+		//clear counter interval
+		clearInterval(timerInterval);
 
 		//calculate the reaction time
 		const reactionTime = Date.now() - timerStart;
@@ -371,27 +374,28 @@ socket.on('afk', (username) => {
 socket.on('playAgain', (retrievedUsername) => {
 	console.log('the users username, PLZ WOOOOORK ', retrievedUsername);
 
+	
 	username = retrievedUsername;
 	console.log('HELLOOOOO username is: ', username);
-
+	
 	//get all the play again buttons
 	const playAgainEl = Array.from(document.querySelectorAll('.play-again')) as HTMLButtonElement[];
-
+	
 	//if button is null, return
 	if(!playAgainEl) {
 		console.log('playAgainEl is null');
 		return;
 	};
-
+	
 	//if button is not null, do this:
 	if(playAgainEl) {
 		console.log('playAgainEl is not null');
-
+		
 		//for each button, add an event listener that listens for a click
 		playAgainEl.forEach((button) => {
 			button.addEventListener('click', () => { //when the button is clicked, do this:
 				console.log('your username after pressing button is: ', username);
-
+				
 				//hide all result-pages/raqequit-page
 				(document.querySelector(`#won-page`) as HTMLDivElement).classList.add('hide');
 				(document.querySelector(`#lost-page`) as HTMLDivElement).classList.add('hide');
@@ -400,6 +404,10 @@ socket.on('playAgain', (retrievedUsername) => {
 				
 				//emit the userJoinRequest event to the server (backend) with the username they had before
 				socket.emit('userJoinRequest', username);
+
+				//set score to 0 - 0
+				const scoreDisplayEl = document.querySelector('#score') as HTMLDivElement;
+				scoreDisplayEl.innerHTML = `0 - 0`;
 			});
 		});
 	};
