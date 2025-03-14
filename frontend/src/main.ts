@@ -93,7 +93,7 @@ const placeObject = (position: number) => { //Place virus on grid
 	cellsEl.forEach(cell => cell.innerHTML = "");
 
 	//Place the virus at the random index, index is taken from "virusPosition" socket event
-	cellsEl[position].innerHTML = "<span class='object'><img src='assets/img/ledsen-mans2.0.png' width='100px' alt='sad måns'></span>";
+	cellsEl[position].innerHTML = "<span class='object'><img src='/img/ledsen-mans2.0.png' width='100px' alt='sad måns'></span>";
 
 	//start timer
 	timerStart = Date.now();
